@@ -52,21 +52,21 @@ CONTACT_TWITTER = 'TinyBee'
 # TWITTER_CONSUMER_SECRET=''
 # FACEBOOK_APP_ID=''
 # FACEBOOK_APP_SECRET=''
-# GOOGLE_CLIENT_ID=''
-# GOOGLE_CLIENT_SECRET=''
+GOOGLE_CLIENT_ID=''
+GOOGLE_CLIENT_SECRET=''
 
 ## Supported Languages
 ## NOTE: You need to create a symbolic link to the translations folder, otherwise
 ## this wont work.
-## ln -s pybossa/themes/your-theme/translations pybossa/translations
-#DEFAULT_LOCALE = 'en'
-#LOCALES = [('en', 'English'), ('es', u'Español'),
-#           ('it', 'Italiano'), ('fr', u'Français'),
-#           ('ja', u'日本語'),('pt_BR','Brazilian Portuguese')]
+ln -s pybossa/themes/your-theme/translations pybossa/translations
+DEFAULT_LOCALE = 'en'
+LOCALES = [('en', 'English'), ('es', u'Español'), ('cn', u'简体中文'),
+           ('it', 'Italiano'), ('fr', u'Français'),
+           ('ja', u'日本語'),('pt_BR','Brazilian Portuguese')]
 
 
 ## list of administrator emails to which error emails get sent
-# ADMINS = ['me@sysadmin.org']
+# ADMINS = ['admin@tinybee.ai']
 
 ## CKAN URL for API calls
 #CKAN_NAME = "Demo CKAN server"
