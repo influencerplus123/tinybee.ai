@@ -3,13 +3,7 @@
 
 This is a fork of PYBOSSA.
 
-# What is PYBOSSA?
-
-PYBOSSA is used for the development of platforms and data collection
-within collaborative environments, analysis and data enrichment.
-
-PYBOSSA is an open source project, thanks to the support by these awesome 
-https://github.com/Scifabric/pybossa/blob/master/BACKERS.md
+PYBOSSA is an open source project, https://github.com/Scifabric/pybossa/
 
 See [installation instructions](http://docs.pybossa.com/install/).
 
@@ -32,11 +26,6 @@ Just run:
 * [Open Knowledge Foundation](http://okfn.org/)
 * [FontAwesome fonts](http://fortawesome.github.com/Font-Awesome/)
 * [GeoLite data by MaxMind](http://www.maxmind.com)
-
-PYBOSSA was inspired by the [BOSSA](http://bossa.berkeley.edu/) crowdsourcing engine but is written in
-python (hence the name!). It can be used for any distributed tasks project
-but was initially developed to help scientists and other researchers
-crowd-source human problem-solving skills!
 
 ## Copyright / License
 
