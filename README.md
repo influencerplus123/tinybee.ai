@@ -23,32 +23,15 @@ Just run:
   nosetests test/
 ```
 
-## Browser testing
-
-[![BrowserStack](http://i.imgur.com/Pg0utrk.png)](http://browserstack.com/)
-
-Thanks to the support of [BrowserStack](http://browserstack.com/) we can do real cross browser testing on multiple desktop and mobile platforms.
-
 # Useful Links
 
 * [Documentation](http://docs.pybossa.com/)
-
-# Contributing
-
-If you want to contribute to the project, please, check the
-[CONTRIBUTING file](CONTRIBUTING.md).
-
-It has the instructions to become a contributor.
 
 ## Acknowledgments
 
 * [Open Knowledge Foundation](http://okfn.org/)
 * [FontAwesome fonts](http://fortawesome.github.com/Font-Awesome/)
 * [GeoLite data by MaxMind](http://www.maxmind.com)
-
-Special thanks to Shuttleworth Foundations for funding us and their true support:
-* [Shuttleworth Foundation](https://www.shuttleworthfoundation.org/)
-![Shuttleworth Foundation Funded](http://pybossa.com/assets/img/shuttleworth-funded.png)
 
 PYBOSSA was inspired by the [BOSSA](http://bossa.berkeley.edu/) crowdsourcing engine but is written in
 python (hence the name!). It can be used for any distributed tasks project
