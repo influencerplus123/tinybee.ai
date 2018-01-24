@@ -80,13 +80,13 @@ setup(
                         ],
 
     # metadata for upload to PyPI
-    author = 'Scifabric LTD',
-    author_email = 'info@scifabric.com',
+    author = 'xyz',
+    author_email = 'xyz@tinyebee.ai',
     description = 'Open Source CrowdSourcing framework',
     long_description = '''PYBOSSA is the ultimate crowdsourcing framework to analyze or enrich data that can't be processed by machines alone.''',
     license = 'AGPLv3',
-    url = 'http://pybossa.com',
-    download_url = 'https://github.com/Scifabric/pybossa',
+    url = 'http://tinybee.ai',
+    download_url = 'https://github.com/tinybee/pybossa',
     include_package_data = True,
     classifiers = [
         'Development Status :: 5 - Production/Stable',
