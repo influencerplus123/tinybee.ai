@@ -5,7 +5,7 @@ ENV REDIS_MASTER=mymaster
 
 # install git and various python library dependencies with alpine tools
 RUN set -x && \
-    apk --no-cache add postgresql-dev g++ gcc git jpeg-dev libffi-dev libjpeg libxml2-dev libxslt-dev linux-headers musl-dev openssl zlib zlib-dev openldap-devel
+    apk --no-cache add postgresql-dev g++ gcc git jpeg-dev libffi-dev libjpeg libxml2-dev libxslt-dev linux-headers musl-dev openssl zlib zlib-dev openldap-dev
 
 # install python dependencies with pip
 # install pybossa from git
