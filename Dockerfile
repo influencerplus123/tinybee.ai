@@ -24,6 +24,7 @@ RUN set -x && \
 # variables in these files are modified with sed from /entrypoint.sh
 ADD alembic.ini /opt/tinybee/
 ADD settings_local.py /opt/tinybee/
+ADD tinybee_logo.png /opt/tinybee/pybossa/static/img
 
 # TODO: we shouldn't need write permissions on the whole folder
 #   Known files written during runtime:
@@ -32,6 +33,7 @@ ADD settings_local.py /opt/tinybee/
 RUN chown -R tinybee:tinybee /opt/tinybee
 
 ADD entrypoint.sh /
+RUN ["chmod", "+x", "/entrypoint.sh"]
 ENTRYPOINT ["/entrypoint.sh"]
 
 # run with unprivileged user

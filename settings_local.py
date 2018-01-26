@@ -18,13 +18,13 @@
 # DEBUG = False
 
 ## webserver host and port
-# HOST = '0.0.0.0'
-# PORT = 5000
+HOST = '0.0.0.0'
+PORT = 8080 
 
 SECRET = 'foobar'
 SECRET_KEY = 'my-session-secret'
 
-SQLALCHEMY_DATABASE_URI = 'postgresql://pybossa:tester@localhost/pybossa'
+SQLALCHEMY_DATABASE_URI = '{{POSTGRES_URL}}' #'postgresql://pybossa:tester@localhost/pybossa'
 
 ##Slave configuration for DB
 #SQLALCHEMY_BINDS = {
@@ -40,7 +40,7 @@ LOGO = 'tinybee_logo.png'
 COPYRIGHT = 'TinyBee'
 DESCRIPTION = 'A tiny tiny tiny bee'
 TERMSOFUSE = ''
-DATAUSE =
+#DATAUSE =
 CONTACT_EMAIL = 'info@tinybee.ai'
 CONTACT_TWITTER = 'TinyBee'
 
@@ -58,7 +58,7 @@ GOOGLE_CLIENT_SECRET=''
 ## Supported Languages
 ## NOTE: You need to create a symbolic link to the translations folder, otherwise
 ## this wont work.
-ln -s pybossa/themes/your-theme/translations pybossa/translations
+#ln -s pybossa/themes/your-theme/translations pybossa/translations
 DEFAULT_LOCALE = 'en'
 LOCALES = [('en', 'English'), ('es', u'Español'), ('cn', u'简体中文'),
            ('it', 'Italiano'), ('fr', u'Français'),
@@ -103,8 +103,8 @@ ENFORCE_PRIVACY = False
 ## Cache setup. By default it is enabled
 ## Redis Sentinel
 # List of Sentinel servers (IP, port)
-REDIS_SENTINEL = [('localhost', 26379)]
-REDIS_MASTER = 'mymaster'
+REDIS_SENTINEL = [('{{REDIS_SENTINEL}}', 26379)]
+REDIS_MASTER = '{{REDIS_MASTER}}'
 REDIS_DB = 0
 REDIS_KEYPREFIX = 'pybossa_cache'
 
