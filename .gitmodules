@@ -4,4 +4,4 @@
 
 [submodule "pybossa/themes/tinybee"]
 	path = pybossa/themes/tinybee
-	url = https://github.com/sfluo/pybossa-default-theme.git
+	url = https://github.com/sfluo/pybossa-default-theme
