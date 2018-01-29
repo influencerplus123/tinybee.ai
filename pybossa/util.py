@@ -346,6 +346,11 @@ def get_user_signup_method(user):
             msg += " <strong>It seems like you signed up with your Twitter account.</strong>"
             msg += "<br/>You can try and sign in by clicking in the Twitter button."
             return (msg, 'twitter')
+        # Wechat
+        elif user.info.get('wechat_token'):
+            msg += " <strong>It seems like you signed up with your Wechat account.</strong>"
+            msg += "<br/>You can try and sign in by clicking in the Wechat button."
+            return (msg, 'wechat')
         # Local account
         else:
             msg += " <strong>It seems that you created an account locally.</strong>"

@@ -46,7 +46,7 @@ def get_user_summary(name):
     """Return user summary."""
     sql = text('''
                SELECT "user".id, "user".name, "user".fullname, "user".created,
-               "user".api_key, "user".twitter_user_id, "user".facebook_user_id,
+               "user".api_key, "user".twitter_user_id, "user".facebook_user_id, "user".wechat_user_id,
                "user".google_user_id, "user".info, "user".admin,
                "user".locale,
                "user".email_addr, COUNT(task_run.user_id) AS n_answers,
@@ -61,6 +61,7 @@ def get_user_summary(name):
     for row in results:
         user = dict(id=row.id, name=row.name, fullname=row.fullname,
                     created=row.created, api_key=row.api_key,
+                    wechat_user_id=row.wechat_user_id,
                     twitter_user_id=row.twitter_user_id,
                     google_user_id=row.google_user_id,
                     facebook_user_id=row.facebook_user_id,

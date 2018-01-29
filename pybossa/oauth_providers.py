@@ -18,6 +18,27 @@
 from flask_oauthlib.client import OAuth
 
 
+class Wechat(object):
+
+    """Class Wechat to enable Wechat signin."""
+
+    def __init__(self, app=None):
+        """Init method."""
+        self.app = app
+        if app is not None:  # pragma: no cover
+            self.init_app(app)
+
+    def init_app(self, app):
+        """Init app using factories."""
+        self.oauth = OAuth().remote_app(
+            'wechat',
+            base_url='https://api.weixin.qq.com/sns/',
+            request_token_url=None,
+            access_token_url='https://api.weixin.qq.com/sns/oauth2/access_token',
+            authorize_url='https://open.weixin.qq.com/connect/oauth2/authorize',
+            consumer_key=app.config['WECHAT_APP_ID'],
+            consumer_secret=app.config['WECHAT_APP_SECRET'])
+
 class Twitter(object):
 
     """Class Twitter to enable Twitter signin."""

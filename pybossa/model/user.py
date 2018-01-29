@@ -54,6 +54,7 @@ class User(db.Model, DomainObject, UserMixin):
     privacy_mode = Column(Boolean, default=True, nullable=False)
     category = Column(Integer)
     flags = Column(Integer)
+    wechat_user_id = Column(BigInteger, unique=True)
     twitter_user_id = Column(BigInteger, unique=True)
     facebook_user_id = Column(BigInteger, unique=True)
     google_user_id = Column(String, unique=True)
