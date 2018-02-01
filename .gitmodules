@@ -1,6 +1,3 @@
 [submodule "pybossa/themes/default"]
 	path = pybossa/themes/default
-	url = https://github.com/PyBossa/pybossa-default-theme.git
-[submodule "pybossa/themes/tinybee"]
-	path = pybossa/themes/tinybee
 	url = https://github.com/sfluo/tinybee-pybossa-theme
