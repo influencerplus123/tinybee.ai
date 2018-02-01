@@ -26,6 +26,7 @@ The objects are:
     * facebook: for Facebook signin
     * twitter: for Twitter signin
     * google: for Google signin
+    * wechat: for wechat signin
     * misaka: for app.long_description markdown support,
     * babel: for i18n support,
     * uploader: for file uploads support,
@@ -36,7 +37,7 @@ The objects are:
     * cors: the Flask-Cors library object
 
 """
-__all__ = ['sentinel', 'db', 'signer', 'mail', 'login_manager', 'facebook',
+__all__ = ['sentinel', 'db', 'signer', 'mail', 'login_manager', 'facebook', 'wechat',
            'twitter', 'google', 'misaka', 'babel', 'uploader', 'debug_toolbar',
            'csrf', 'timeouts', 'ratelimits', 'user_repo', 'project_repo',
            'task_repo', 'announcement_repo', 'blog_repo', 'auditlog_repo', 'webhook_repo',
@@ -85,6 +86,9 @@ facebook = Facebook()
 
 from pybossa.oauth_providers import Twitter
 twitter = Twitter()
+
+from pybossa.oauth_providers import Wechat
+wechat = Wechat()
 
 from pybossa.oauth_providers import Google
 google = Google()

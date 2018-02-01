@@ -316,6 +316,7 @@ def setup_blueprints(app):
 
 def setup_external_services(app):
     """Setup external services."""
+    setup_wechat_login(app)
     setup_twitter_login(app)
     setup_facebook_login(app)
     setup_google_login(app)
@@ -324,6 +325,20 @@ def setup_external_services(app):
     setup_twitter_importer(app)
     setup_youtube_importer(app)
 
+def setup_wechat_login(app):
+    try:  # pragma: no cover
+        if (app.config['WECHAT_APP_ID'] and
+            app.config['WECHAT_APP_SECRET']):
+            wechat.init_app(app)
+            from pybossa.view.wechat import blueprint as wechat_bp
+            app.register_blueprint(wechat_bp, url_prefix='/wechat')
+    except Exception as inst:  # pragma: no cover
+        print type(inst)
+        print inst.args
+        print inst
+        print "Wechat signin disabled"
+        log_message = 'Wechat signin disabled: %s' % str(inst)
+        app.logger.info(log_message)
 
 def setup_twitter_login(app):
     try:  # pragma: no cover

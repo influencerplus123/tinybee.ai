@@ -154,10 +154,12 @@ def signin():
 
     if request.method == 'POST' and not form.validate():
         flash(gettext('Please correct the errors'), 'error')
-    auth = {'twitter': False, 'facebook': False, 'google': False}
+    auth = {'twitter': False, 'facebook': False, 'google': False, 'wechat': False}
     if current_user.is_anonymous():
         # If Twitter is enabled in config, show the Twitter Sign in button
         if (isLdap is False):
+            if ('wechat' in current_app.blueprints):  # pragma: no cover
+                auth['wechat'] = True
             if ('twitter' in current_app.blueprints):  # pragma: no cover
                 auth['twitter'] = True
             if ('facebook' in current_app.blueprints):  # pragma: no cover
@@ -514,7 +516,7 @@ def update_profile(name):
         return abort(404)
     ensure_authorized_to('update', user)
     show_passwd_form = True
-    if user.twitter_user_id or user.google_user_id or user.facebook_user_id:
+    if user.twitter_user_id or user.google_user_id or user.facebook_user_id or user.wechat_user_id:
         show_passwd_form = False
     usr = cached_users.get_user_summary(name)
     # Extend the values
@@ -736,6 +738,13 @@ def forgot_password():
                 msg['html'] = render_template(
                     '/account/email/forgot_password_openid.html',
                     user=user, account_name='Twitter')
+            elif user.wechat_user_id:
+                msg['body'] = render_template(
+                    '/account/email/forgot_password_openid.md',
+                    user=user, account_name='Wechat')
+                msg['html'] = render_template(
+                    '/account/email/forgot_password_openid.html',
+                    user=user, account_name='Wechat')
             elif user.facebook_user_id:
                 msg['body'] = render_template(
                     '/account/email/forgot_password_openid.md',
@@ -768,7 +777,7 @@ def forgot_password():
         else:
             flash(gettext("We don't have this email in our records. "
                           "You may have signed up with a different "
-                          "email or used Twitter, Facebook, or "
+                          "email or used Wechat, Twitter, Facebook, or "
                           "Google to sign-in"), 'error')
     if request.method == 'POST' and not form.validate():
         flash(gettext('Something went wrong, please correct the errors on the '
