@@ -22,7 +22,7 @@ This package adds GET, POST, PUT and DELETE methods for:
     * Task favorites
 
 """
-import json
+import simplejson as json
 from api_base import APIBase
 from pybossa.core import task_repo
 from flask.ext.login import current_user, request

@@ -26,7 +26,7 @@ This package adds GET, POST, PUT and DELETE methods for any class:
     * etc.
 
 """
-import json
+import simplejson as json
 from flask import request, abort, Response, current_app
 from flask.ext.login import current_user
 from flask.views import MethodView

@@ -29,7 +29,7 @@ This package adds GET, POST, PUT and DELETE methods for:
 
 """
 
-import json
+import simplejson as json # use simplejson for serialize Decimal
 import jwt
 from flask import Blueprint, request, abort, Response, make_response
 from flask import current_app
@@ -140,6 +140,7 @@ def new_task(project_id):
             return response
         return Response(json.dumps({}), mimetype="application/json")
     except Exception as e:
+	print(e)
         return error.format_exception(e, target='project', action='GET')
 
 
