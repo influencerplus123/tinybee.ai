@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with PYBOSSA.  If not, see <http://www.gnu.org/licenses/>.
 
-from sqlalchemy import Integer, Boolean, Unicode, Text, String, BigInteger
+from sqlalchemy import Integer, Boolean, Unicode, Text, String, BigInteger, Numeric
 from sqlalchemy.schema import Column
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSON
@@ -54,6 +54,8 @@ class User(db.Model, DomainObject, UserMixin):
     privacy_mode = Column(Boolean, default=True, nullable=False)
     category = Column(Integer)
     flags = Column(Integer)
+    balance = Column(Numeric(10, 2), default=0.0)
+    withdrawn = Column(Numeric(10,2), default=0.0)
     wechat_user_id = Column(BigInteger, unique=True)
     twitter_user_id = Column(BigInteger, unique=True)
     facebook_user_id = Column(BigInteger, unique=True)

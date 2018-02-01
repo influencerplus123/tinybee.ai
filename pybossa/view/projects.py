@@ -1305,6 +1305,45 @@ def task_settings(short_name):
                            n_completed_tasks=ps.n_completed_tasks,
                            pro_features=pro)
 
+@blueprint.route('/<short_name>/tasks/price', methods=['GET', 'POST'])
+@login_required
+def task_price(short_name):
+    project, owner, ps = project_by_shortname(short_name)
+
+    title = project_title(project, gettext('Price'))
+    form = TaskPriceForm(request.body)
+    ensure_authorized_to('read', project)
+    ensure_authorized_to('update', project)
+    pro = pro_features()
+    project_sanitized, owner_sanitized = sanitize_project_owner(project,
+                                                                owner,
+                                                                current_user,
+                                                                ps)
+    if request.method == 'GET':
+        response = dict(template='/projects/task_price.html',
+                        title=title,
+                        form=form,
+                        project=project_sanitized,
+                        owner=owner_sanitized,
+                        pro_features=pro)
+        return handle_content_type(response)
+    elif request.method == 'POST' and form.validate():
+        task_repo.update_tasks_price(project, form.price.data)
+        # Log it
+        auditlogger.log_event(project, current_user, 'update', 'task.price',
+                              'N/A', form.price.data)
+        msg = gettext('Price of Tasks updated!')
+        flash(msg, 'success')
+        return redirect_content_type(url_for('.tasks', short_name=project.short_name))
+    else:
+        flash(gettext('Please correct the errors'), 'error')
+        response = dict(template='/projects/task_price.html',
+                        title=title,
+                        form=form,
+                        project=project_sanitized,
+                        owner=owner_sanitized,
+                        pro_features=pro)
+        return handle_content_type(response)
 
 @blueprint.route('/<short_name>/tasks/redundancy', methods=['GET', 'POST'])
 @login_required

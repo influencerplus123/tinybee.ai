@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with PYBOSSA.  If not, see <http://www.gnu.org/licenses/>.
 
-from sqlalchemy import Integer, Boolean, Float, UnicodeText, Text
+from sqlalchemy import Integer, Boolean, Float, UnicodeText, Text, Numeric
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.dialects.postgresql import JSON, ARRAY
@@ -48,6 +48,8 @@ class Task(db.Model, DomainObject):
     priority_0 = Column(Float, default=0)
     #: Task.info field in JSON with the data for the task.
     info = Column(JSON)
+    #: 
+    price = Column(Numeric(10,2), default=0.02)
     #: Number of answers to collect for this task.
     n_answers = Column(Integer, default=30)
     #: Array of User IDs that favorited this task

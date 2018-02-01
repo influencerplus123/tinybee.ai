@@ -86,6 +86,13 @@ class TaskPresenterForm(Form):
     editor = TextAreaField('')
 
 
+class TaskPriceForm(Form):
+    price = DecimalField(lazy_gettext('Price'),
+                             [validators.Required(),
+                              validators.NumberRange(
+                                  min=0.001, max=1000,
+                                  message=lazy_gettext('Number of answers should be a \
+                                                       value between .001 and 1,000'))])
 class TaskRedundancyForm(Form):
     n_answers = IntegerField(lazy_gettext('Redundancy'),
                              [validators.Required(),
