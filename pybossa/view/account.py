@@ -454,6 +454,7 @@ def _show_public_profile(user):
 def _show_own_profile(user):
     user_dict = cached_users.get_user_summary(user.name)
     rank_and_score = cached_users.rank_and_score(user.id)
+    user.pending = cached_users.get_pending_earning(user.id)
     user.rank = rank_and_score['rank']
     user.score = rank_and_score['score']
     user.total = cached_users.get_total_users()

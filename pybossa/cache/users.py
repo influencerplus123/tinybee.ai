@@ -48,7 +48,7 @@ def get_user_summary(name):
                SELECT "user".id, "user".name, "user".fullname, "user".created,
                "user".api_key, "user".twitter_user_id, "user".facebook_user_id, "user".wechat_user_id,
                "user".google_user_id, "user".info, "user".admin,
-               "user".locale,
+               "user".locale, "user".balance, "user".withdrawn,
                "user".email_addr, COUNT(task_run.user_id) AS n_answers,
                "user".valid_email, "user".confirmation_email_sent
                FROM "user"
@@ -66,12 +66,14 @@ def get_user_summary(name):
                     google_user_id=row.google_user_id,
                     facebook_user_id=row.facebook_user_id,
                     info=row.info, admin=row.admin,
-                    locale=row.locale,
+                    locale=row.locale, 
+                    balance=row.balance, withdrawn=row.withdrawn,
                     email_addr=row.email_addr, n_answers=row.n_answers,
                     valid_email=row.valid_email,
                     confirmation_email_sent=row.confirmation_email_sent,
                     registered_ago=pretty_date(row.created))
     if user:
+        user['pending'] = get_pending_earning(user['id'])
         rank_score = rank_and_score(user['id'])
         user['rank'] = rank_score['rank']
         user['score'] = rank_score['score']
@@ -91,6 +93,15 @@ def public_get_user_summary(name):
         public_user = u.to_public_json(data=private_user)
     return public_user
 
+@memoize(timeout=timeouts.get('USER_TIMEOUT'))
+def get_pending_earning(user_id):
+    """Return pending revenue for a user. """
+    sql = text('''SELECT SUM(earning) as pending_earning FROM task_run WHERE user_id=:user_id and checked=false''')
+    results = session.execute(sql, dict(user_id=user_id))
+    pending_earning = 0.0
+    for row in results:
+        pending_earning = row.pending_earning
+    return pending_earning
 
 @memoize(timeout=timeouts.get('USER_TIMEOUT'))
 def rank_and_score(user_id):
