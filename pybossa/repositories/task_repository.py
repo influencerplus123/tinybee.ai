@@ -151,20 +151,6 @@ class TaskRepository(Repository):
                    UPDATE task SET price=:price,
                    state='ongoing' WHERE project_id=:project_id''')
         self.db.session.execute(sql, dict(price=price, project_id=project.id))
-        # Update task.state according to their new n_answers value
-        sql = text('''
-                   WITH project_tasks AS (
-                   SELECT task.id, task.price,
-                   COUNT(task_run.id) AS n_task_runs, task.state
-                   FROM task, task_run
-                   WHERE task_run.task_id=task.id AND task.project_id=:project_id
-                   GROUP BY task.id)
-                   UPDATE task SET state='completed'
-                   FROM project_tasks
-                   WHERE (project_tasks.n_task_runs >=:price)
-                   and project_tasks.id=task.id
-                   ''')
-        self.db.session.execute(sql, dict(price=price, project_id=project.id))
         self.db.session.commit()
         cached_projects.clean_project(project.id)
 
