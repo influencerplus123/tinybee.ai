@@ -40,7 +40,7 @@ class TokenAPI(APIBase):
     """
 
     _resource_name = 'token'
-    oauth_providers = ('twitter', 'facebook', 'google', 'wechat')
+    oauth_providers = ('twitter', 'facebook', 'google', 'wechat', 'weibo')
 
     @jsonpify
     @ratelimit(limit=300, per=15 * 60)

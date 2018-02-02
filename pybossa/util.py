@@ -39,6 +39,7 @@ import time
 from flask.ext.babel import lazy_gettext
 import re
 
+from pybossa.oauth_providers import OAuthProviders
 
 def last_flashed_message():
     """Return last flashed message by flask."""
@@ -331,31 +332,14 @@ def get_user_signup_method(user):
     """Return which OAuth sign up method the user used."""
     msg = u'Sorry, there is already an account with the same e-mail.'
     if user.info:
-        # Google
-        if user.info.get('google_token'):
-            msg += " <strong>It seems like you signed up with your Google account.</strong>"
-            msg += "<br/>You can try and sign in by clicking in the Google button."
-            return (msg, 'google')
-        # Facebook
-        elif user.info.get('facebook_token'):
-            msg += " <strong>It seems like you signed up with your Facebook account.</strong>"
-            msg += "<br/>You can try and sign in by clicking in the Facebook button."
-            return (msg, 'facebook')
-        # Twitter
-        elif user.info.get('twitter_token'):
-            msg += " <strong>It seems like you signed up with your Twitter account.</strong>"
-            msg += "<br/>You can try and sign in by clicking in the Twitter button."
-            return (msg, 'twitter')
-        # Local account
-        # Wechat
-        elif user.info.get('wechat_token'):
-            msg += " <strong>It seems like you signed up with your Wechat account.</strong>"
-            msg += "<br/>You can try and sign in by clicking in the Wechat button."
-            return (msg, 'wechat')
-        else:
-            msg += " <strong>It seems that you created an account locally.</strong>"
-            msg += " <br/>You can reset your password if you don't remember it."
-            return (msg, 'local')
+        for isp in OAuthProviders:
+            if user.info.get(isp+'_token'):
+                msg += " <strong>It seems like you signed up with your %s account.</strong>" % isp.title()
+                msg += "<br/>You can try and sign in by clicking in the %s button." % isp.title()
+                return (msg, isp)
+        msg += " <strong>It seems that you created an account locally.</strong>"
+        msg += " <br/>You can reset your password if you don't remember it."
+        return (msg, 'local')
     else:
         msg += " <strong>It seems that you created an account locally.</strong>"
         msg += " <br/>You can reset your password if you don't remember it."

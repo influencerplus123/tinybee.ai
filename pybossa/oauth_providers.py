@@ -17,6 +17,29 @@
 # along with PYBOSSA.  If not, see <http://www.gnu.org/licenses/>.
 from flask_oauthlib.client import OAuth
 
+OAuthProviders = ['twitter', 'facebook', 'google', 'wechat', 'weibo']
+
+class Weibo(object):
+ 
+    """Class Weibo to enable Wechat signin."""
+ 
+    def __init__(self, app=None):
+        """Init method."""
+        self.app = app
+        if app is not None:  # pragma: no cover
+            self.init_app(app)
+ 
+    def init_app(self, app):
+        """Init app using factories."""
+        self.oauth = OAuth().remote_app(
+             'weibo',
+             base_url='https://api.t.sina.come.cn/oauth/',
+             request_token_url='https://api.t.sina.com.cn/oauth/request_token',
+             access_token_url='https://api.t.sina.com.cn/oauth/access_token', 
+             authorize_url='https://api.t.sina.com.cn/oauth/authorize',
+             consumer_key=app.config['WEIBO_APP_ID'],
+             consumer_secret=app.config['WEIBO_APP_SECRET'])
+
 class Wechat(object):
  
     """Class Wechat to enable Wechat signin."""

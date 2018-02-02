@@ -57,6 +57,7 @@ class User(db.Model, DomainObject, UserMixin):
     balance = Column(Numeric(10, 2), default=0.0)
     withdrawn = Column(Numeric(10,2), default=0.0)
     wechat_user_id = Column(BigInteger, unique=True)
+    weibo_user_id = Column(BigInteger, unique=True)
     twitter_user_id = Column(BigInteger, unique=True)
     facebook_user_id = Column(BigInteger, unique=True)
     google_user_id = Column(String, unique=True)

@@ -47,7 +47,7 @@ def get_user_summary(name):
     sql = text('''
                SELECT "user".id, "user".name, "user".fullname, "user".created,
                "user".api_key, "user".twitter_user_id, "user".facebook_user_id, "user".wechat_user_id,
-               "user".google_user_id, "user".info, "user".admin,
+               "user".google_user_id, "user".info, "user".admin, "user".weibo_user_id,
                "user".locale, "user".balance, "user".withdrawn,
                "user".email_addr, COUNT(task_run.user_id) AS n_answers,
                "user".valid_email, "user".confirmation_email_sent
@@ -62,6 +62,7 @@ def get_user_summary(name):
         user = dict(id=row.id, name=row.name, fullname=row.fullname,
                     created=row.created, api_key=row.api_key,
                     wechat_user_id=row.wechat_user_id,
+                    weibo_user_id=row.weibo_user_id,
                     twitter_user_id=row.twitter_user_id,
                     google_user_id=row.google_user_id,
                     facebook_user_id=row.facebook_user_id,

@@ -316,6 +316,7 @@ def setup_blueprints(app):
 
 def setup_external_services(app):
     """Setup external services."""
+    setup_weibo_login(app)
     setup_wechat_login(app)
     setup_twitter_login(app)
     setup_facebook_login(app)
@@ -324,6 +325,21 @@ def setup_external_services(app):
     setup_dropbox_importer(app)
     setup_twitter_importer(app)
     setup_youtube_importer(app)
+
+def setup_weibo_login(app):
+    try:  # pragma: no cover
+        if (app.config['WEIBO_APP_ID'] and
+            app.config['WEIBO_APP_SECRET']):
+            weibo.init_app(app)
+            from pybossa.view.weibo import blueprint as weibo_bp
+            app.register_blueprint(weibo_bp, url_prefix='/weibo')
+    except Exception as inst:  # pragma: no cover
+        print type(inst)
+        print inst.args
+        print inst
+        print "Weibo signin disabled"
+        log_message = 'Weibo signin disabled: %s' % str(inst)
+        app.logger.info(log_message)
 
 def setup_wechat_login(app):
     try:  # pragma: no cover
