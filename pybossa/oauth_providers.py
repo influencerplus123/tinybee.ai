@@ -33,12 +33,15 @@ class Weibo(object):
         """Init app using factories."""
         self.oauth = OAuth().remote_app(
              'weibo',
-             base_url='https://api.t.sina.come.cn/oauth/',
-             request_token_url='https://api.t.sina.com.cn/oauth/request_token',
-             access_token_url='https://api.t.sina.com.cn/oauth/access_token', 
-             authorize_url='https://api.t.sina.com.cn/oauth/authorize',
+             base_url='https://api.weibo.com/2/',
+             request_token_url=None, #'https://a.com.cn/oauth/request_token',
+             access_token_method="POST",
+             access_token_url='https://api.weibo.com/oauth2/access_token', 
+             authorize_url='https://api.weibo.com/oauth2/authorize',
              consumer_key=app.config['WEIBO_APP_ID'],
-             consumer_secret=app.config['WEIBO_APP_SECRET'])
+             consumer_secret=app.config['WEIBO_APP_SECRET'],
+             content_type="application/json"
+        )
 
 class Wechat(object):
  
