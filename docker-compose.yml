@@ -1,0 +1,66 @@
+version: "2"
+
+services:
+    redis-master:
+        image: 'redis:3.0-alpine'
+        container_name: redis-master
+
+    redis-sentinel:
+        image: 'jvstein/redis-sentinel:latest'
+        depends_on:
+            - redis-master
+        links:
+            - redis-master
+        container_name: redis-sentinel
+
+    postgres:
+        image: 'postgres:9.6-alpine'
+        environment:
+            - POSTGRES_USER=pybossa
+            - POSTGRES_PASSWORD=supersecretpassword
+        container_name: postgres 
+
+    # initializes the database
+    db-init:
+        image: 'tinybee:alpha'
+        depends_on:
+            - postgres
+        environment:
+            - POSTGRES_URL=postgresql://pybossa:supersecretpassword@db/pybossa
+        links:
+            - postgres:db
+        #command: sh -c "sleep 5 && python cli.py db_create"
+        command: sh -c "sleep 5 && python cli.py db_rebuild"
+        container_name: db-init
+
+    # TODO: create a separate scheduler process??
+    #       command: rqscheduler --host redis-master
+    # background worker process
+    pybossa-bgworker:
+        image: 'tinybee:alpha'
+        build: .
+        depends_on:
+            - db-init
+        environment:
+            - POSTGRES_URL=postgresql://pybossa:supersecretpassword@db/pybossa
+        links:
+            - redis-master
+            - redis-sentinel
+            - postgres:db
+        command: python app_context_rqworker.py scheduled_jobs super high medium low email maintenance
+        container_name: pybossa-bgworker 
+
+    # web server
+    pybossa:
+        image: 'tinybee:alpha'
+        depends_on:
+            - db-init
+        environment:
+            - POSTGRES_URL=postgresql://pybossa:supersecretpassword@db/pybossa
+        links:
+            - redis-master
+            - redis-sentinel
+            - postgres:db
+        ports:
+            - "80:8080"
+        container_name: tinybee-pybossa
