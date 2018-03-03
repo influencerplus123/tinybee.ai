@@ -18,7 +18,7 @@
 
 import time
 import re
-import json
+import simplejson as json
 import os
 import math
 import requests
