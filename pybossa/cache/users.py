@@ -118,30 +118,30 @@ def rank_and_score(user_id):
     return rank_and_score
 
 
-def projects_contributed(user_id):
+def projects_contributed(user_id, order_by='name'):
     """Return projects that user_id has contributed to."""
     sql = text('''
                WITH projects_contributed as
-                    (SELECT DISTINCT(project_id) FROM task_run
-                     WHERE user_id=:user_id)
+                    (SELECT project_id, MAX(finish_time) as last_contribution  FROM task_run
+                     WHERE user_id=:user_id GROUP BY project_id)
                SELECT * FROM project, projects_contributed
-               WHERE project.id=projects_contributed.project_id ORDER BY project.name DESC;
-               ''')
+               WHERE project.id=projects_contributed.project_id ORDER BY {} DESC;
+               '''.format(order_by))
     results = session.execute(sql, dict(user_id=user_id))
     projects_contributed = []
     for row in results:
         project = dict(row)
         project['n_tasks'] = n_tasks(row.id)
         project['n_volunteers'] = n_volunteers(row.id)
-        project['overall_progress'] = overall_progress(row.id),
+        project['overall_progress'] = overall_progress(row.id)
         projects_contributed.append(project)
     return projects_contributed
 
 
 @memoize(timeout=timeouts.get('USER_TIMEOUT'))
-def projects_contributed_cached(user_id):
+def projects_contributed_cached(user_id, order_by='name'):
     """Return projects contributed too (cached version)."""
-    return projects_contributed(user_id)
+    return projects_contributed(user_id, order_by='name')
 
 
 def public_projects_contributed(user_id):
@@ -165,7 +165,7 @@ def public_projects_contributed_cached(user_id):
 def published_projects(user_id):
     """Return published projects for user_id."""
     sql = text('''
-               SELECT * 
+               SELECT *
                FROM project
                WHERE project.published=true
                AND :user_id = ANY (project.owners_ids::int[]);
@@ -176,7 +176,7 @@ def published_projects(user_id):
         project = dict(row)
         project['n_tasks'] = n_tasks(row.id)
         project['n_volunteers'] = n_volunteers(row.id)
-        project['overall_progress'] = overall_progress(row.id),
+        project['overall_progress'] = overall_progress(row.id)
         projects_published.append(project)
     return projects_published
 
@@ -219,7 +219,7 @@ def draft_projects(user_id):
         project = dict(row)
         project['n_tasks'] = n_tasks(row.id)
         project['n_volunteers'] = n_volunteers(row.id)
-        project['overall_progress'] = overall_progress(row.id),
+        project['overall_progress'] = overall_progress(row.id)
         projects_draft.append(project)
     return projects_draft
 
@@ -262,14 +262,17 @@ def get_users_page(page, per_page=24):
         accounts.append(tmp)
     return accounts
 
+
 def delete_user_summary_id(oid):
     """Delete from cache the user summary."""
     user = db.session.query(User).get(oid)
     delete_memoized(get_user_summary, user.name)
 
+
 def delete_user_summary(name):
     """Delete from cache the user summary."""
     delete_memoized(get_user_summary, name)
+
 
 @memoize(timeout=timeouts.get('APP_TIMEOUT'))
 def get_project_report_userdata(project_id):
@@ -299,3 +302,20 @@ def get_project_report_userdata(project_id):
          round(row.avg_time_per_task.total_seconds() / 60, 2)]
          for row in results]
     return users_report
+
+
+@memoize(timeout=timeouts.get('APP_TIMEOUT'))
+def get_user_pref_metadata(name):
+    sql = text("""
+    SELECT info->'metadata', user_pref FROM public.user WHERE name=:name;
+    """)
+
+    cursor = session.execute(sql, dict(name=name))
+    row = cursor.fetchone()
+    upref_mdata = row[0] or {}
+    upref_mdata.update(row[1] or {})
+    return upref_mdata
+
+
+def delete_user_pref_metadata(name):
+    delete_memoized(get_user_pref_metadata, name)

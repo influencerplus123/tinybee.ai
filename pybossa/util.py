@@ -38,6 +38,7 @@ import simplejson
 import time
 from flask.ext.babel import lazy_gettext
 import re
+import pycountry
 
 from pybossa.oauth_providers import OAuthProviders
 

@@ -19,7 +19,7 @@
 from sqlalchemy import Integer, Boolean, Unicode, Text, String, BigInteger, Numeric
 from sqlalchemy.schema import Column
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import JSON
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
 from flask.ext.login import UserMixin
 from flask import current_app
@@ -67,7 +67,8 @@ class User(db.Model, DomainObject, UserMixin):
     confirmation_email_sent = Column(Boolean, default=False)
     subscribed = Column(Boolean, default=True)
     consent = Column(Boolean, default=False)
-    info = Column(MutableDict.as_mutable(JSON), default=dict())
+    info = Column(MutableDict.as_mutable(JSONB), default=dict())
+    user_pref = Column(JSONB)
 
     ## Relationships
     task_runs = relationship(TaskRun, backref='user')

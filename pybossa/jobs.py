@@ -700,7 +700,7 @@ def news():
         import cPickle as pickle
     except ImportError:  # pragma: no cover
         import pickle
-    urls = ['https://github.com/pybossa/pybossa/releases.atom',
+    urls = ['https://github.com/Scifabric/pybossa/releases.atom',
             'http://scifabric.com/blog/all.atom.xml']
     score = 0
     notify = False
@@ -709,7 +709,8 @@ def news():
     for url in urls:
         d = feedparser.parse(url)
         tmp = get_news(score)
-        if (len(tmp) == 0) or (tmp[0]['updated'] != d.entries[0]['updated']):
+        if (d.entries and (len(tmp) == 0)
+           or (tmp[0]['updated'] != d.entries[0]['updated'])):
             sentinel.master.zadd(FEED_KEY, float(score),
                                  pickle.dumps(d.entries[0]))
             notify = True
