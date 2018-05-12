@@ -49,7 +49,7 @@ from pybossa.util import url_for_app_type
 from pybossa.util import fuzzyboolean
 from pybossa.cache import users as cached_users
 from pybossa.auth import ensure_authorized_to
-from pybossa.jobs import send_mail
+from pybossa.jobs import send_mail, export_userdata, delete_account
 from pybossa.core import user_repo, ldap
 from pybossa.feed import get_update_feed
 from pybossa.messages import *
@@ -64,6 +64,8 @@ from werkzeug.datastructures import MultiDict
 blueprint = Blueprint('account', __name__)
 
 mail_queue = Queue('email', connection=sentinel.master)
+export_queue = Queue('high', connection=sentinel.master)
+super_queue = Queue('super', connection=sentinel.master)
 
 
 @blueprint.route('/')
@@ -835,6 +837,29 @@ def forgot_password():
     return handle_content_type(data)
 
 
+@blueprint.route('/<name>/export')
+@login_required
+def start_export(name):
+    """
+    Starts a export of all user data according to EU GDPR
+
+    Data will be available on GET /export after it is processed
+
+    """
+    user = user_repo.get_by_name(name)
+    if not user:
+        return abort(404)
+    if user.id != current_user.id:
+        return abort(403)
+
+    ensure_authorized_to('update', user)
+    export_queue.enqueue(export_userdata,
+                         user_id=user.id)
+    msg = gettext('GDPR export started')
+    flash(msg, 'success')
+    return redirect_content_type(url_for('account.profile', name=name))
+
+
 @blueprint.route('/<name>/resetapikey', methods=['GET', 'POST'])
 @login_required
 def reset_api_key(name):
@@ -858,6 +883,29 @@ def reset_api_key(name):
     else:
         csrf = dict(form=dict(csrf=generate_csrf()))
         return jsonify(csrf)
+
+
+@blueprint.route('/<name>/delete')
+@login_required
+def delete(name):
+    """
+    Delete user account.
+    """
+    user = user_repo.get_by_name(name)
+    if not user:
+        return abort(404)
+    if current_user.name != name:
+        return abort(403)
+
+    super_queue.enqueue(delete_account, user.id)
+
+    if (request.headers.get('Content-Type') == 'application/json' or
+        request.args.get('response_format') == 'json'):
+
+        response = dict(job='enqueued', template='account/delete.html')
+        return handle_content_type(response)
+    else:
+        return redirect(url_for('account.signout'))
 
 
 @blueprint.route('/save_metadata/<name>', methods=['POST'])
