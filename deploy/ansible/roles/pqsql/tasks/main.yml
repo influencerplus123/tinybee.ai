@@ -1,0 +1,12 @@
+
+- name: install PostgreSQL
+  apt: name={{item}} state=latest
+  with_items:
+    - postgresql
+    - postgresql-server-dev-all
+    - libpq-dev
+    - python-psycopg2
+
+- name: start PostgreSQL service
+  service: name=postgresql state=started
+

@@ -1,0 +1,12 @@
+
+- name: start Redis service
+  service: name=redis-server state=started
+
+- name: copy Redis Sentinel config
+  copy: src={{pybossa_path}}/contrib/redis/sentinel.conf dest=/etc/redis/sentinel.conf owner=redis group=redis mode=644
+
+- name: copy Redis Sentinel systemd config
+  copy: src={{pybossa_path}}/contrib/redis/redis-sentinel.service dest=/etc/systemd/system/redis-sentinel.service owner=root group=root mode=755
+
+- name: start Sentinel and enable it at boot
+  service: name=redis-sentinel state=started enabled=yes
