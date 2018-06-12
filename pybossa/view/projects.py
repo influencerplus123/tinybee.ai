@@ -18,7 +18,7 @@
 
 import time
 import re
-import json
+import simplejson as json
 import os
 import math
 import requests
@@ -35,7 +35,7 @@ from rq import Queue
 import pybossa.sched as sched
 
 from pybossa.core import (uploader, signer, sentinel, json_exporter,
-                          csv_exporter, importer, sentinel, db)
+                          csv_exporter, importer, sentinel, db, anonymizer)
 from pybossa.model import make_uuid
 from pybossa.model.project import Project
 from pybossa.model.category import Category
@@ -174,10 +174,13 @@ def index(page):
 
 
 def project_index(page, lookup, category, fallback, use_count, order_by=None,
-                  desc=False):
+                  desc=False, pre_ranked=False):
     """Show projects of a category"""
     per_page = current_app.config['APPS_PER_PAGE']
-    ranked_projects = rank(lookup(category), order_by, desc)
+    ranked_projects = lookup(category)
+
+    if not pre_ranked:
+        ranked_projects = rank(ranked_projects, order_by, desc)
 
     offset = (page - 1) * per_page
     projects = ranked_projects[offset:offset+per_page]
@@ -192,15 +195,22 @@ def project_index(page, lookup, category, fallback, use_count, order_by=None,
     featured_cat = Category(name='Featured',
                             short_name='featured',
                             description='Featured projects')
+    historical_contributions_cat = Category(name='Historical Contributions',
+                                            short_name='historical_contributions',
+                                            description='Projects previously contributed to')
     if category == 'featured':
         active_cat = featured_cat
     elif category == 'draft':
         active_cat = Category(name='Draft',
                               short_name='draft',
                               description='Draft projects')
+    elif category == 'historical_contributions':
+        active_cat = historical_contributions_cat
     else:
         active_cat = project_repo.get_category_by(short_name=category)
 
+    if current_app.config.get('HISTORICAL_CONTRIBUTIONS_AS_CATEGORY'):
+        categories.insert(0, historical_contributions_cat)
     # Check if we have to add the section Featured to local nav
     if cached_projects.n_count('featured') > 0:
         categories.insert(0, featured_cat)
@@ -227,6 +237,21 @@ def draft(page):
     desc = bool(request.args.get('desc', False))
     return project_index(page, cached_projects.get_all_draft, 'draft',
                          False, True, order_by, desc)
+
+
+@blueprint.route('/category/historical_contributions/', defaults={'page': 1})
+@blueprint.route('/category/historical_contributions/page/<int:page>/')
+@login_required
+def historical_contributions(page):
+    """Show the projects a user has previously worked on"""
+    order_by = request.args.get('orderby', None)
+    desc = bool(request.args.get('desc', False))
+    pre_ranked = True
+    user_id = current_user.id
+    def lookup(*args, **kwargs):
+        return cached_users.projects_contributed(user_id, order_by='last_contribution')
+    return project_index(page, lookup, 'historical_contributions', False, True, order_by,
+                         desc, pre_ranked)
 
 
 @blueprint.route('/category/<string:category>/', defaults={'page': 1})
@@ -835,8 +860,11 @@ def presenter(short_name):
 
     def invite_new_volunteers(project, ps):
         user_id = None if current_user.is_anonymous() else current_user.id
-        user_ip = request.remote_addr if current_user.is_anonymous() else None
-        task = sched.new_task(project.id, project.info.get('sched'), user_id, user_ip, 0)
+        user_ip = (anonymizer.ip(request.remote_addr or '127.0.0.1')
+                   if current_user.is_anonymous() else None)
+        task = sched.new_task(project.id,
+                              project.info.get('sched'),
+                              user_id, user_ip, 0)
         return task == [] and ps.overall_progress < 100.0
 
     def respond(tmpl):
@@ -1236,7 +1264,6 @@ def show_stats(short_name):
         auth_pct_taskruns = 0
 
     userStats = dict(
-        geo=current_app.config['GEO'],
         anonymous=dict(
             users=users_stats['n_anon'],
             taskruns=users_stats['n_anon'],
@@ -1305,6 +1332,45 @@ def task_settings(short_name):
                            n_completed_tasks=ps.n_completed_tasks,
                            pro_features=pro)
 
+@blueprint.route('/<short_name>/tasks/price', methods=['GET', 'POST'])
+@login_required
+def task_price(short_name):
+    project, owner, ps = project_by_shortname(short_name)
+
+    title = project_title(project, gettext('Price'))
+    form = TaskPriceForm(request.body)
+    ensure_authorized_to('read', project)
+    ensure_authorized_to('update', project)
+    pro = pro_features()
+    project_sanitized, owner_sanitized = sanitize_project_owner(project,
+                                                                owner,
+                                                                current_user,
+                                                                ps)
+    if request.method == 'GET':
+        response = dict(template='/projects/task_price.html',
+                        title=title,
+                        form=form,
+                        project=project_sanitized,
+                        owner=owner_sanitized,
+                        pro_features=pro)
+        return handle_content_type(response)
+    elif request.method == 'POST' and form.validate():
+        task_repo.update_tasks_price(project, form.price.data)
+        # Log it
+        auditlogger.log_event(project, current_user, 'update', 'task.price',
+                              'N/A', form.price.data)
+        msg = gettext('Price of Tasks updated!')
+        flash(msg, 'success')
+        return redirect_content_type(url_for('.tasks', short_name=project.short_name))
+    else:
+        flash(gettext('Please correct the errors'), 'error')
+        response = dict(template='/projects/task_price.html',
+                        title=title,
+                        form=form,
+                        project=project_sanitized,
+                        owner=owner_sanitized,
+                        pro_features=pro)
+        return handle_content_type(response)
 
 @blueprint.route('/<short_name>/tasks/redundancy', methods=['GET', 'POST'])
 @login_required

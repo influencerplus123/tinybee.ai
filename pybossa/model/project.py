@@ -19,7 +19,7 @@
 from sqlalchemy import Integer, Boolean, Unicode, Float, UnicodeText, Text
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.dialects.postgresql import JSON, ARRAY
+from sqlalchemy.dialects.postgresql import JSONB, ARRAY
 from sqlalchemy.ext.mutable import MutableDict, MutableList
 from flask import current_app
 
@@ -57,6 +57,8 @@ class Project(db.Model, DomainObject):
     allow_anonymous_contributors = Column(Boolean, default=True)
     #: If the project is published
     published = Column(Boolean, nullable=False, default=False)
+    #: If the project is public
+    public = Column(Boolean, nullable=False, default=False)
     # If the project is featured
     featured = Column(Boolean, nullable=False, default=False)
     # Secret key for project
@@ -70,7 +72,7 @@ class Project(db.Model, DomainObject):
     #: Project Category
     category_id = Column(Integer, ForeignKey('category.id'), nullable=False)
     #: Project info field formatted as JSON
-    info = Column(MutableDict.as_mutable(JSON), default=dict())
+    info = Column(MutableDict.as_mutable(JSONB), default=dict())
 
     tasks = relationship(Task, cascade='all, delete, delete-orphan', backref='project')
     task_runs = relationship(TaskRun, backref='project',

@@ -12,7 +12,7 @@ RUN set -x && \
 # add unprivileged user for running the service
 ENV LIBRARY_PATH=/lib:/usr/lib
 RUN set -x && \
-    git clone --recursive https://github.com/sfluo/tinybee /opt/tinybee && \
+    git clone --recursive https://github.com/sfluo/tinybee.ai /opt/tinybee && \
     cd /opt/tinybee && \
     pip install -U pip setuptools && \
     pip install -r /opt/tinybee/requirements.txt && \

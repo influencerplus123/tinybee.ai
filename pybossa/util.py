@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with PYBOSSA.  If not, see <http://www.gnu.org/licenses/>.
 """Module with PYBOSSA utils."""
+from yacryptopan import CryptoPAn
 from datetime import timedelta, datetime
 from functools import update_wrapper
 from flask_wtf import Form
@@ -38,7 +39,9 @@ import simplejson
 import time
 from flask.ext.babel import lazy_gettext
 import re
+import pycountry
 
+from pybossa.oauth_providers import OAuthProviders
 
 def last_flashed_message():
     """Return last flashed message by flask."""
@@ -331,31 +334,14 @@ def get_user_signup_method(user):
     """Return which OAuth sign up method the user used."""
     msg = u'Sorry, there is already an account with the same e-mail.'
     if user.info:
-        # Google
-        if user.info.get('google_token'):
-            msg += " <strong>It seems like you signed up with your Google account.</strong>"
-            msg += "<br/>You can try and sign in by clicking in the Google button."
-            return (msg, 'google')
-        # Facebook
-        elif user.info.get('facebook_token'):
-            msg += " <strong>It seems like you signed up with your Facebook account.</strong>"
-            msg += "<br/>You can try and sign in by clicking in the Facebook button."
-            return (msg, 'facebook')
-        # Twitter
-        elif user.info.get('twitter_token'):
-            msg += " <strong>It seems like you signed up with your Twitter account.</strong>"
-            msg += "<br/>You can try and sign in by clicking in the Twitter button."
-            return (msg, 'twitter')
-        # Wechat
-        elif user.info.get('wechat_token'):
-            msg += " <strong>It seems like you signed up with your Wechat account.</strong>"
-            msg += "<br/>You can try and sign in by clicking in the Wechat button."
-            return (msg, 'wechat')
-        # Local account
-        else:
-            msg += " <strong>It seems that you created an account locally.</strong>"
-            msg += " <br/>You can reset your password if you don't remember it."
-            return (msg, 'local')
+        for isp in OAuthProviders:
+            if user.info.get(isp+'_token'):
+                msg += " <strong>It seems like you signed up with your %s account.</strong>" % isp.title()
+                msg += "<br/>You can try and sign in by clicking in the %s button." % isp.title()
+                return (msg, isp)
+        msg += " <strong>It seems that you created an account locally.</strong>"
+        msg += " <br/>You can reset your password if you don't remember it."
+        return (msg, 'local')
     else:
         msg += " <strong>It seems that you created an account locally.</strong>"
         msg += " <br/>You can reset your password if you don't remember it."
@@ -377,8 +363,9 @@ def get_user_id_or_ip():
     """Return the id of the current user if is authenticated.
     Otherwise returns its IP address (defaults to 127.0.0.1).
     """
+    cp = CryptoPAn(current_app.config.get('CRYPTOPAN_KEY'))
     user_id = current_user.id if current_user.is_authenticated() else None
-    user_ip = request.remote_addr or "127.0.0.1" \
+    user_ip = cp.anonymize(request.remote_addr or "127.0.0.1") \
         if current_user.is_anonymous() else None
     external_uid = request.args.get('external_uid')
     return dict(user_id=user_id, user_ip=user_ip, external_uid=external_uid)

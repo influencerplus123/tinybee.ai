@@ -27,6 +27,8 @@ The objects are:
     * twitter: for Twitter signin
     * wechat: for Wechat signin
     * google: for Google signin
+    * weibo: for weibo signin
+    * wechat: for wechat signin
     * misaka: for app.long_description markdown support,
     * babel: for i18n support,
     * uploader: for file uploads support,
@@ -38,12 +40,12 @@ The objects are:
 
 """
 __all__ = ['sentinel', 'db', 'signer', 'mail', 'login_manager', 'facebook', 'wechat',
-           'twitter', 'google', 'misaka', 'babel', 'uploader', 'debug_toolbar',
+           'twitter', 'google', 'misaka', 'babel', 'uploader', 'debug_toolbar', 'weibo',
            'csrf', 'timeouts', 'ratelimits', 'user_repo', 'project_repo',
            'task_repo', 'announcement_repo', 'blog_repo', 'auditlog_repo', 'webhook_repo',
            'result_repo', 'newsletter', 'importer', 'flickr',
            'plugin_manager', 'assets', 'JSONEncoder', 'cors', 'ldap',
-           'flask_profiler']
+           'flask_profiler', 'anonymizer']
 
 # CACHE
 from pybossa.sentinel import Sentinel
@@ -89,6 +91,12 @@ wechat = Wechat()
 
 from pybossa.oauth_providers import Twitter
 twitter = Twitter()
+
+from pybossa.oauth_providers import Wechat
+wechat = Wechat()
+
+from pybossa.oauth_providers import Weibo
+weibo = Weibo()
 
 from pybossa.oauth_providers import Google
 google = Google()
@@ -159,3 +167,7 @@ ldap = LDAP()
 
 # Flask Profiler
 import flask_profiler
+
+# IP anonymizer
+from pybossa.anonymizer import Anonymizer
+anonymizer = Anonymizer()

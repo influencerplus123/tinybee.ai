@@ -66,7 +66,6 @@ def create_app(run_as_server=True):
     setup_ldap(app)
     setup_external_services(app)
     setup_jinja(app)
-    setup_geocoding(app)
     setup_csrf_protection(app)
     setup_debug_toolbar(app)
     setup_jinja2_filters(app)
@@ -78,6 +77,8 @@ def create_app(run_as_server=True):
     plugin_manager.init_app(app)
     plugin_manager.install_plugins()
     import pybossa.model.event_listeners
+    setup_upref_mdata(app)
+    anonymizer.init_app(app)
     return app
 
 
@@ -91,6 +92,12 @@ def configure_app(app):
         config_path = os.path.join(os.path.dirname(here), 'settings_local.py')
         if os.path.exists(config_path):  # pragma: no cover
             app.config.from_pyfile(config_path)
+    else:
+        config_path = os.path.abspath(os.environ.get('PYBOSSA_SETTINGS'))
+
+    config_upref_mdata = os.path.join(os.path.dirname(config_path), 'settings_upref_mdata.py')
+    app.config.upref_mdata = True if os.path.exists(config_upref_mdata) else False
+
     # Override DB in case of testing
     if app.config.get('SQLALCHEMY_DATABASE_TEST_URI'):
         app.config['SQLALCHEMY_DATABASE_URI'] = \
@@ -316,6 +323,8 @@ def setup_blueprints(app):
 
 def setup_external_services(app):
     """Setup external services."""
+
+    setup_weibo_login(app)
     setup_wechat_login(app)
     setup_twitter_login(app)
     setup_facebook_login(app)
@@ -325,6 +334,35 @@ def setup_external_services(app):
     setup_twitter_importer(app)
     setup_youtube_importer(app)
 
+def setup_weibo_login(app):
+    try:  # pragma: no cover
+        if (app.config['WEIBO_APP_ID'] and
+            app.config['WEIBO_APP_SECRET']):
+            weibo.init_app(app)
+            from pybossa.view.weibo import blueprint as weibo_bp
+            app.register_blueprint(weibo_bp, url_prefix='/weibo')
+    except Exception as inst:  # pragma: no cover
+        print type(inst)
+        print inst.args
+        print inst
+        print "Weibo signin disabled"
+        log_message = 'Weibo signin disabled: %s' % str(inst)
+        app.logger.info(log_message)
+
+def setup_wechat_login(app):
+    try:  # pragma: no cover
+        if (app.config['WECHAT_APP_ID'] and
+            app.config['WECHAT_APP_SECRET']):
+            wechat.init_app(app)
+            from pybossa.view.wechat import blueprint as wechat_bp
+            app.register_blueprint(wechat_bp, url_prefix='/wechat')
+    except Exception as inst:  # pragma: no cover
+        print type(inst)
+        print inst.args
+        print inst
+        print "Wechat signin disabled"
+        log_message = 'Wechat signin disabled: %s' % str(inst)
+        app.logger.info(log_message)
 
 def setup_wechat_login(app):
     try:  # pragma: no cover
@@ -454,18 +492,6 @@ def setup_youtube_importer(app):
         log_message = 'Youtube importer not available: %s' % str(inst)
         app.logger.info(log_message)
 
-def setup_geocoding(app):
-    """Setup geocoding."""
-    # Check if app stats page can generate the map
-    geolite = app.root_path + '/../dat/GeoLiteCity.dat'
-    if not os.path.exists(geolite):  # pragma: no cover
-        app.config['GEO'] = False
-        print("GeoLiteCity.dat file not found")
-        print("Project page stats web map disabled")
-    else:  # pragma: no cover
-        app.config['GEO'] = True
-
-
 def url_for_other_page(page):
     """Setup url for other pages."""
     args = request.view_args.copy()
@@ -543,6 +569,7 @@ def setup_hooks(app):
                 request.body = get_json_multidict(request)
             except TypeError:
                 abort(400)
+
 
     @app.context_processor
     def _global_template_context():
@@ -722,6 +749,7 @@ def setup_strong_password(app):
     global enable_strong_password
     enable_strong_password = app.config.get('ENABLE_STRONG_PASSWORD')
 
+
 def setup_ldap(app):
     if app.config.get('LDAP_HOST'):
         ldap.init_app(app)
@@ -729,3 +757,16 @@ def setup_ldap(app):
 def setup_profiler(app):
     if app.config.get('FLASK_PROFILER'):
         flask_profiler.init_app(app)
+
+def setup_upref_mdata(app):
+    """Setup user preference and metadata choices for user accounts"""
+    global upref_mdata_choices
+    upref_mdata_choices = dict(languages=[], locations=[],
+                                timezones=[], user_types=[])
+    if app.config.upref_mdata:
+        from settings_upref_mdata import (upref_languages, upref_locations,
+                mdata_timezones, mdata_user_types)
+        upref_mdata_choices['languages'] = upref_languages()
+        upref_mdata_choices['locations'] = upref_locations()
+        upref_mdata_choices['timezones'] = mdata_timezones()
+        upref_mdata_choices['user_types'] = mdata_user_types()

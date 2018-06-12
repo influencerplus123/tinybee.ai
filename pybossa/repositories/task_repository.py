@@ -36,6 +36,7 @@ class TaskRepository(Repository):
 
     def get_task_by(self, **attributes):
         filters, _, _, _ = self.generate_query_from_keywords(Task, **attributes)
+        print self.db.session.query(Task).filter(*filters)
         return self.db.session.query(Task).filter(*filters).first()
 
     def filter_tasks_by(self, limit=None, offset=0, yielded=False,
@@ -143,6 +144,16 @@ class TaskRepository(Repository):
         self.db.session.commit()
         cached_projects.clean_project(project.id)
         self._delete_zip_files_from_store(project)
+
+    def update_tasks_price(self, project, price):
+        """update the price of every task from a project and their state.
+        Use raw SQL for performance"""
+        sql = text('''
+                   UPDATE task SET price=:price,
+                   state='ongoing' WHERE project_id=:project_id''')
+        self.db.session.execute(sql, dict(price=price, project_id=project.id))
+        self.db.session.commit()
+        cached_projects.clean_project(project.id)
 
     def update_tasks_redundancy(self, project, n_answer):
         """update the n_answer of every task from a project and their state.

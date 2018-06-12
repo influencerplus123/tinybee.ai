@@ -20,7 +20,7 @@ from flask import current_app
 from flask_wtf import Form
 from flask_wtf.file import FileField, FileRequired
 from wtforms import IntegerField, DecimalField, TextField, BooleanField, \
-    SelectField, validators, TextAreaField, PasswordField, FieldList
+    SelectField, validators, TextAreaField, PasswordField, FieldList, SelectMultipleField
 from wtforms.fields.html5 import EmailField, URLField
 from wtforms.widgets import HiddenInput
 from flask.ext.babel import lazy_gettext, gettext
@@ -37,6 +37,8 @@ from pybossa.uploader import local
 from flask import safe_join
 from flask.ext.login import current_user
 import os
+from pybossa.forms.fields.time_field import TimeField
+from validator import TimeFieldsValidator
 
 EMAIL_MAX_LENGTH = 254
 USER_NAME_MAX_LENGTH = 35
@@ -86,6 +88,13 @@ class TaskPresenterForm(Form):
     editor = TextAreaField('')
 
 
+class TaskPriceForm(Form):
+    price = DecimalField(lazy_gettext('Price'),
+                             [validators.Required(),
+                              validators.NumberRange(
+                                  min=0.001, max=1000,
+                                  message=lazy_gettext('Number of answers should be a \
+                                                       value between .001 and 1,000'))])
 class TaskRedundancyForm(Form):
     n_answers = IntegerField(lazy_gettext('Redundancy'),
                              [validators.Required(),
@@ -286,18 +295,34 @@ class BulkTaskLocalCSVImportForm(Form):
         return {'type': 'localCSV', 'csv_filename': None}
 
 
+class BulkTaskIIIFImportForm(Form):
+    form_name = TextField(label=None, widget=HiddenInput(), default='iiif')
+    msg_required = lazy_gettext("You must provide a URL")
+    msg_url = lazy_gettext("Oops! That's not a valid URL. "
+                           "You must provide a valid URL")
+    manifest_uri = TextField(lazy_gettext('URL'),
+                             [validators.Required(message=msg_required),
+                             validators.URL(message=msg_url)])
+
+    def get_import_data(self):
+        return {'type': 'iiif', 'manifest_uri': self.manifest_uri.data}
+
+
 class GenericBulkTaskImportForm(object):
     """Callable class that will return, when called, the appropriate form
     instance"""
-    _forms = { 'csv': BulkTaskCSVImportForm,
-              'gdocs': BulkTaskGDImportForm,
-              'epicollect': BulkTaskEpiCollectPlusImportForm,
-              'flickr': BulkTaskFlickrImportForm,
-              'dropbox': BulkTaskDropboxImportForm,
-              'twitter': BulkTaskTwitterImportForm,
-              's3': BulkTaskS3ImportForm,
-              'youtube': BulkTaskYoutubeImportForm,
-              'localCSV': BulkTaskLocalCSVImportForm }
+    _forms = {
+        'csv': BulkTaskCSVImportForm,
+        'gdocs': BulkTaskGDImportForm,
+        'epicollect': BulkTaskEpiCollectPlusImportForm,
+        'flickr': BulkTaskFlickrImportForm,
+        'dropbox': BulkTaskDropboxImportForm,
+        'twitter': BulkTaskTwitterImportForm,
+        's3': BulkTaskS3ImportForm,
+        'youtube': BulkTaskYoutubeImportForm,
+        'localCSV': BulkTaskLocalCSVImportForm,
+        'iiif': BulkTaskIIIFImportForm
+    }
 
     def __call__(self, form_name, *form_args, **form_kwargs):
         if form_name is None:
@@ -501,3 +526,44 @@ class AvatarUploadForm(Form):
 
 class TransferOwnershipForm(Form):
     email_addr = EmailField(lazy_gettext('Email of the new owner'))
+
+
+class UserPrefMetadataForm(Form):
+    """Form for admins to add metadata for users."""
+    languages = SelectMultipleField(
+                        lazy_gettext('Language(s)'),
+                        choices=[], default='')
+    locations = SelectMultipleField(
+                        lazy_gettext('Location(s)'),
+                        choices=[], default='')
+    work_hours_from = TimeField(
+                        lazy_gettext('Work Hours From'),
+                        [TimeFieldsValidator(["work_hours_to", "timezone"],
+                        message="Work Hours From, Work Hours To, and Timezone must be filled out for submission")],
+                        default='')
+    work_hours_to = TimeField(
+                        lazy_gettext('Work Hours To'),
+                        [TimeFieldsValidator(["work_hours_to", "timezone"],
+                        message="Work Hours From, Work Hours To, and Timezone must be filled out for submission")],
+                        default='')
+    timezone = SelectField(
+                        lazy_gettext('Timezone'),
+                        [TimeFieldsValidator(["work_hours_from", "work_hours_to"],
+                        message="Work Hours From, Work Hours To, and Timezone must be filled out for submission")],
+                        choices=[], default=None)
+    user_type = SelectField(
+                        lazy_gettext('Type of user'),
+                        choices=[], default='')
+    review = TextAreaField(
+                        lazy_gettext('Additional comments'), default='')
+
+    def set_upref_mdata_choices(self):
+        from pybossa.core import upref_mdata_choices
+        self.languages.choices = upref_mdata_choices['languages']
+        self.locations.choices = upref_mdata_choices['locations']
+        self.timezone.choices = upref_mdata_choices['timezones']
+        self.user_type.choices = upref_mdata_choices['user_types']
+
+class RegisterFormWithUserPrefMetadata(RegisterForm, UserPrefMetadataForm):
+    """Create User Form that has ability to set user preferences and metadata"""
+    consent = BooleanField(default='checked', false_values=("False", "false", '', '0', 0))

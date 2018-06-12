@@ -102,6 +102,15 @@
       command: cp -p {{pybossa_path}}/settings_local.py.tmpl {{pybossa_path}}/settings_local.py
       when: not check_settings.stat.exists
 
+    - name: set postfix mail option
+      debconf: name=postfix question="postfix/main_mailer_type" value="'Internet Site'" vtype="string"
+
+    - name: set postfix mailname
+      debconf: name=postfix question="postfix/mailname" value="localhost" vtype="string"
+
+    - name: install postfix mail 
+      apt: name=mailutils state=installed update_cache=true
+
     # http://stackoverflow.com/a/16783253
     # psql -lqt | cut -d \| -f 1 | grep -w <db_name>
     - name: check if pybossa DB already existing
@@ -171,6 +180,17 @@
         state=present
         insertafter=EOF
         create=yes
+        
+     # activate virtualenv ->line redis-server {{pybossa_path}}/contrib/sentinel.conf --sentinel added
+    - name: virtualenv usage by default on bash login
+      become_user: "{{pybossa_user}}"
+      lineinfile:
+        dest={{vagrant_home}}/.bashrc
+        line="redis-server {{pybossa_path}}/contrib/sentinel.conf --sentinel"
+        owner=vagrant
+        state=present
+        insertafter=EOF
+        create=yes     
 
     - name: go to /vagrant directory on bash login
       lineinfile:

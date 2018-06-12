@@ -54,7 +54,7 @@ def get_top(n=4):
 def browse_tasks(project_id, limit=10, offset=0):
     """Cache browse tasks view for a project."""
     sql = text('''
-               SELECT task.id, task.n_answers, sum(counter.n_task_runs) as n_task_runs
+               SELECT task.id, task.n_answers, sum(counter.n_task_runs) as n_task_runs, task.price
                FROM task, counter
                WHERE task.id=counter.task_id and task.project_id=:project_id
                GROUP BY task.id
@@ -66,7 +66,7 @@ def browse_tasks(project_id, limit=10, offset=0):
     tasks = []
     for row in results:
         task = dict(id=row.id, n_task_runs=row.n_task_runs,
-                    n_answers=row.n_answers)
+                    n_answers=row.n_answers, price=row.price)
         task['pct_status'] = _pct_status(row.n_task_runs, row.n_answers)
         tasks.append(task)
     return tasks
