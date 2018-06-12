@@ -5,36 +5,30 @@
 
 VAGRANTFILE_API_VERSION = "2"
 
-# Ansible install script for Ubuntu
-$ansible_install_script = <<SCRIPT
-export DEBIAN_FRONTEND=noninteractive
-echo Check if Ansible existing...
-if ! which ansible >/dev/null; then
-  echo update package index files...
-  apt-get update -qq
-  echo install Ansible...
-  apt-get install -qq ansible
-fi
-SCRIPT
+Vagrant.configure(2) do |config|
 
-$ansible_local_provisioning_script = <<SCRIPT
-export DEBIAN_FRONTEND=noninteractive
-export PYTHONUNBUFFERED=1
-echo PyBossa provisioning with Ansible...
-ansible-playbook -u vagrant /vagrant/provisioning/playbook.yml -i /vagrant/provisioning/ansible_hosts -c local
-SCRIPT
+  config.vm.provision "shell", 
+  inline: "which python || sudo apt -y install python"
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "bento/ubuntu-16.04"
-  config.vm.provider "virtualbox" do |v|
-    v.memory = 1024
+  config.vm.box = "ubuntu/xenial64"
+  # set up network ip and port forwarding
+  config.vm.network "forwarded_port", guest: 5000, host: 5000, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 5001, host: 5001, host_ip: "127.0.0.1"
+  config.vm.network :private_network, ip: "192.168.33.10"
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "512"
+    vb.cpus = 1
   end
-  config.vm.network :forwarded_port, host: 5000, guest: 5000
-  config.vm.network :forwarded_port, host: 5001, guest: 5001
+  # Copy your ssh keys for github so that your git credentials work
+  if File.exists?(File.expand_path("~/.ssh/id_rsa"))
+    config.vm.provision "file", source: "~/.ssh/id_rsa", destination: "~/.ssh/id_rsa"
+    config.vm.provision "file", source: "~/.ssh/id_rsa.pub", destination: "~/.ssh/id_rsa.pub"
+  end
+  config.vm.synced_folder ".", "/vagrant", mount_options: ["dmode=775,fmode=664"]
   # turn off warning message `stdin: is not a tty error`
   config.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
-  # be sure that there  is Ansible for local provisioning
-  config.vm.provision "shell", inline: $ansible_install_script
-  # do the final Ansible local provisioning
-  config.vm.provision "shell", inline: $ansible_local_provisioning_script
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "provisioning/playbook.yml"
+    ansible.inventory_path = "provisioning/inventory/ansible_hosts"
+  end
 end

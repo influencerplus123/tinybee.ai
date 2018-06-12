@@ -16,11 +16,14 @@ from alembic import command
 from html2text import html2text
 from sqlalchemy.sql import text
 
+
 app = create_app(run_as_server=False)
+
 
 def setup_alembic_config():
     alembic_cfg = Config("alembic.ini")
     command.stamp(alembic_cfg, "head")
+
 
 def db_create():
     '''Create the db'''

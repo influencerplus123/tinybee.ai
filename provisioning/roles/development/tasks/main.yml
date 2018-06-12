@@ -1,0 +1,19 @@
+---
+- name: install tinybee build requirements
+  apt: name={{item}} state=latest
+  with_items:
+    - build-essential
+    - libjpeg-dev
+    - libssl-dev
+    - swig
+    - libffi-dev
+    - dbus
+    - libdbus-1-dev
+    - libdbus-glib-1-dev
+    - libsasl2-dev
+    - libldap2-dev
+    - libssl-dev
+    - libldap2-dev
+  tags:
+  - dependencies
+

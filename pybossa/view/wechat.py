@@ -18,7 +18,7 @@
 """Wechat view for PYBOSSA."""
 from flask import Blueprint, request, url_for, redirect, flash, current_app
 from flask import abort
-from flask.ext.login import login_user, current_user
+from flask_login import login_user, current_user
 from flask_oauthlib.client import OAuthException
 
 from pybossa.core import wechat, user_repo, newsletter

@@ -21,9 +21,9 @@ import logging
 import humanize
 from flask import Flask, url_for, request, render_template, \
     flash, _app_ctx_stack, abort
-from flask.ext.login import current_user
-from flask.ext.babel import gettext
-from flask.ext.assets import Bundle
+from flask_login import current_user
+from flask_babel import gettext
+from flask_assets import Bundle
 from flask_json_multidict import get_json_multidict
 from pybossa import default_settings as settings
 from pybossa.extensions import *
@@ -317,8 +317,7 @@ def setup_blueprints(app):
         app.register_blueprint(bp['handler'], url_prefix=bp['url_prefix'])
 
     from rq_dashboard import RQDashboard
-    RQDashboard(app, url_prefix='/admin/rq', auth_handler=current_user,
-                redis_conn=sentinel.master)
+    RQDashboard(app, url_prefix='/admin/rq', auth_handler=current_user)
 
 
 def setup_external_services(app):
@@ -741,7 +740,7 @@ def setup_newsletter(app):
 
 def setup_assets(app):
     """Setup assets."""
-    from flask.ext.assets import Environment
+    from flask_assets import Environment
     assets = Environment(app)
 
 

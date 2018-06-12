@@ -1,0 +1,34 @@
+---
+- name: Install Python apt packages
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - python
+    - python-dev
+    - python-setuptools
+    - python-pip
+  tags:
+    - dependencies
+
+
+- name: upgrade pip
+  become: yes
+  pip:
+    name: pip
+    version: "9.0.3"
+    extra_args: --upgrade
+
+- name: Install pip dependencies for SNI support
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - pyopenssl
+    - ndg-httpsclient
+    - pyasn1
+  tags:
+    - dependencies
+  become: true
+
