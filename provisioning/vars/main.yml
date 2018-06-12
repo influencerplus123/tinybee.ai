@@ -1,17 +1,7 @@
 ---
 default_file_mode: "u=rwX,g=rwX,o=rX"
-project_name: "bomoda2"
 tinybee_dir: "/tinybee"
 tinybee_user: "tinybee"
 vagrant_dir: "/vagrant"
-apps_dir: "/bomoda/apps"
-bin_dir: "/bomoda/bin"
-data_dir: "/bomoda/data"
-project_repo: "git@github.com:Bomoda/bomoda2.git"
-deploy_dir: "/deploy"
-model_dir: "/bomoda/models"
-log_dir: "/var/log/bomoda"
-static_dir: "/bomoda/static"
-deploy_user: "deploy"
 
 
