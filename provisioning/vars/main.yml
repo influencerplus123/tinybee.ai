@@ -1,0 +1,7 @@
+---
+default_file_mode: "u=rwX,g=rwX,o=rX"
+tinybee_dir: "/tinybee"
+tinybee_user: "tinybee"
+vagrant_dir: "/vagrant"
+
+

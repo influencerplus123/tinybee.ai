@@ -1,0 +1,38 @@
+---
+- name: update apt cache
+  apt: update_cache=yes
+
+- name: Instasll Server necessary softwares.
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - build-essential
+    - git
+    - ntp
+  tags:
+    - dependencies
+
+- name: Start time synchronization service
+  become: yes
+  service:
+    name: ntp
+    state: started
+    enabled: yes
+
+- name: Create tinybee user
+  become: yes
+  user:
+    name: "{{ tinybee_user }}"
+    state: present
+    home: "{{ tinybee_dir }}"
+
+- name: Create tinybee group
+  become: yes
+  group:
+    name: "{{ tinybee_user }}"
+    state: present
+    system: yes
+

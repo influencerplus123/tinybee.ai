@@ -1,0 +1,71 @@
+---
+- name: Install Python apt packages
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - python
+    - python-dev
+    - python-setuptools
+    - python-pip
+  tags:
+    - dependencies
+
+
+- name: upgrade pip
+  become: yes
+  pip:
+    name: pip
+    version: "9.0.3"
+    extra_args: --upgrade
+
+- name: Install pip dependencies for SNI support
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - pyopenssl
+    - ndg-httpsclient
+    - humanize
+    - flask
+    - flask-login
+    - Flask-Babel
+    - flask-assets
+    - flask_json_multidict
+    - redis
+    - flask_mail
+    - SQLAlchemy
+    - Flask-SQLAlchemy
+    - flask_debugtoolbar
+    - Flask-OAuthlib
+    - Flask-Misaka
+    - flask_wtf
+    - mailchimp
+    - flask-plugins
+    - twitter
+    - google-api-python-client
+    - speaklater
+    - flask_cors
+    - flask_simpleldap
+    - flask_profiler
+    - raven[flask]
+    - alembic
+    - html2text
+    - Pillow
+    - unidecode
+    - flatten_json
+    - werkzeug
+    - pandas
+    - PyJWT
+    - pygeoip
+    - markdown
+    - rq
+    - otpauth
+    - readability-lxml
+    - yacryptopan
+    - pycountry
+    - faker
+    - rq_scheduler
+  become: true
+

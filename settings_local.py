@@ -17,14 +17,14 @@
 
 # DEBUG = False
 
-## webserver host and port
+# webserver host and port
 HOST = '0.0.0.0'
-PORT = 8080 
+PORT = 8080
 
 SECRET = 'foobar'
 SECRET_KEY = 'my-session-secret'
 
-SQLALCHEMY_DATABASE_URI = '{{POSTGRES_URL}}' #'postgresql://pybossa:tester@localhost/pybossa'
+SQLALCHEMY_DATABASE_URI = 'postgresql://tinybee:123@localhost/tinybee'
 
 ##Slave configuration for DB
 #SQLALCHEMY_BINDS = {
@@ -40,7 +40,7 @@ LOGO = 'tinybee_logo.png'
 COPYRIGHT = 'TinyBee'
 DESCRIPTION = 'A tiny tiny tiny bee'
 TERMSOFUSE = ''
-THEME = 'tinybee' 
+THEME = 'tinybee'
 #THEME = 'libcrowds-pybossa-theme'
 #DATAUSE =
 CONTACT_EMAIL = 'info@tinybee.ai'

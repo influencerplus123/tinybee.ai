@@ -21,7 +21,8 @@ from sqlalchemy.schema import Column
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.mutable import MutableDict
-from flask.ext.login import UserMixin
+from flask_login import current_user
+from flask_login import UserMixin
 from flask import current_app
 
 from pybossa.core import db, signer
