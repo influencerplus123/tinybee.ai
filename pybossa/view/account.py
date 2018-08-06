@@ -559,11 +559,7 @@ def update_profile(name):
         return abort(404)
     ensure_authorized_to('update', user)
     show_passwd_form = True
-<<<<<<< HEAD
-    if user.twitter_user_id or user.google_user_id or user.facebook_user_id or user.wechat_user_id:
-=======
     if user.twitter_user_id or user.google_user_id or user.facebook_user_id or user.wechat_user_id or user.weibo_user_id:
->>>>>>> 50e8dffbc99e0d2fcaf0cc2b857823a36f284a9f
         show_passwd_form = False
     usr = cached_users.get_user_summary(name)
     # Extend the values

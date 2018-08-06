@@ -62,7 +62,7 @@ def create_app(run_as_server=True):
         setup_scheduled_jobs(app)
     setup_blueprints(app)
     setup_hooks(app)
-    setup_error_handlers(app)
+    # setup_error_handlers(app)
     setup_ldap(app)
     setup_external_services(app)
     setup_jinja(app)
@@ -317,7 +317,7 @@ def setup_blueprints(app):
         app.register_blueprint(bp['handler'], url_prefix=bp['url_prefix'])
 
     from rq_dashboard import RQDashboard
-    RQDashboard(app, url_prefix='/admin/rq', auth_handler=current_user)
+    RQDashboard(app, url_prefix='/admin/rq')
 
 
 def setup_external_services(app):
@@ -573,7 +573,7 @@ def setup_hooks(app):
     @app.context_processor
     def _global_template_context():
         notify_admin = False
-        if (current_user and current_user.is_authenticated()
+        if (current_user and current_user.is_authenticated
             and current_user.admin):
             key = NEWS_FEED_KEY + str(current_user.id)
             if sentinel.slave.get(key):

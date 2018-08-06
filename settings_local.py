@@ -15,16 +15,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with PyBossa.  If not, see <http://www.gnu.org/licenses/>.
 
-# DEBUG = False
+DEBUG = True
 
 # webserver host and port
 HOST = '0.0.0.0'
-PORT = 8080
+PORT = 5000
 
 SECRET = 'foobar'
 SECRET_KEY = 'my-session-secret'
 
 SQLALCHEMY_DATABASE_URI = 'postgresql://tinybee:123@localhost/tinybee'
+CRYPTOPAN_KEY = '32-char-str-for-AES-key-and-pad.'
 
 ##Slave configuration for DB
 #SQLALCHEMY_BINDS = {
@@ -50,12 +51,12 @@ CONTACT_TWITTER = 'TinyBee'
 ## APPS_PER_PAGE = 20
 
 ## External Auth providers
-# TWITTER_CONSUMER_KEY=''
-# TWITTER_CONSUMER_SECRET=''
-# FACEBOOK_APP_ID=''
-# FACEBOOK_APP_SECRET=''
-GOOGLE_CLIENT_ID=''
-GOOGLE_CLIENT_SECRET=''
+TWITTER_CONSUMER_KEY='32'
+TWITTER_CONSUMER_SECRET='32'
+FACEBOOK_APP_ID='1'
+FACEBOOK_APP_SECRET='1'
+GOOGLE_CLIENT_ID='1'
+GOOGLE_CLIENT_SECRET='1'
 
 ## Supported Languages
 ## NOTE: You need to create a symbolic link to the translations folder, otherwise
@@ -105,8 +106,8 @@ ENFORCE_PRIVACY = False
 ## Cache setup. By default it is enabled
 ## Redis Sentinel
 # List of Sentinel servers (IP, port)
-REDIS_SENTINEL = [('{{REDIS_SENTINEL}}', 26379)]
-REDIS_MASTER = '{{REDIS_MASTER}}'
+REDIS_SENTINEL = [('localhost', 26379)]
+REDIS_MASTER = 'mymaster'
 REDIS_DB = 0
 REDIS_KEYPREFIX = 'pybossa_cache'
 

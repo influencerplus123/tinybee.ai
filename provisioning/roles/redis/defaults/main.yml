@@ -29,7 +29,7 @@ redis_local_facts: true
 redis_service_name: "redis_{{ redis_port }}"
 
 ## Networking/connection options
-redis_bind: 0.0.0.0
+redis_bind: 127.0.0.1
 redis_port: 6379
 redis_password: false
 # Slave replication options
@@ -98,16 +98,16 @@ redis_notify_keyspace_events: '""'
 
 ## Redis sentinel configs
 # Set this to true on a host to configure it as a Sentinel
-redis_sentinel: false
+redis_sentinel: true
 redis_sentinel_dir: /var/lib/redis/sentinel_{{ redis_sentinel_port }}
-redis_sentinel_bind: 0.0.0.0
+redis_sentinel_bind: 127.0.0.1
 redis_sentinel_port: 26379
 redis_sentinel_pidfile: /var/run/redis/sentinel_{{ redis_sentinel_port }}.pid
-redis_sentinel_logfile: '""'
+redis_sentinel_logfile: '/var/log/redis/redis_sentinel_log'
 redis_sentinel_syslog_ident: sentinel_{{ redis_sentinel_port }}
 redis_sentinel_oom_score_adjust: 0
 redis_sentinel_monitors:
-  - name: master01
+  - name: mymaster
     host: localhost
     port: 6379
     quorum: 2

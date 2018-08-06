@@ -3,6 +3,8 @@
   apt: name={{item}} state=latest
   with_items:
     - build-essential
+    - python-dev
+    - libldap2-dev
     - libjpeg-dev
     - libssl-dev
     - swig
@@ -11,9 +13,8 @@
     - libdbus-1-dev
     - libdbus-glib-1-dev
     - libsasl2-dev
-    - libldap2-dev
     - libssl-dev
-    - libldap2-dev
+
   tags:
   - dependencies
 

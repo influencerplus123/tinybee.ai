@@ -19,7 +19,7 @@
       - default/redis_sentinel.init.j2
       paths:
         - ../templates
-  when: redis_as_service and ansible_service_mgr|default() != "systemd"
+  # when: redis_as_service and ansible_service_mgr|default() != "systemd"
 
 - name: create sentinel systemd service
   template:
@@ -33,30 +33,30 @@
       paths:
         - ../templates
   register: sentinel_unit_file
-  when: redis_as_service and ansible_service_mgr|default() == "systemd"
+  # when: redis_as_service and ansible_service_mgr|default() == "systemd"
 
 - name: create systemd tmpfiles configuration
   template:
     src: etc/tmpfiles.d/redis.conf.j2
     dest: /etc/tmpfiles.d/redis.conf
     mode: 0644
-  when:
-    - redis_as_service
-    - ansible_service_mgr|default() == "systemd"
-    - (redis_sentinel_pidfile|dirname).startswith("/var/run") or (redis_sentinel_pidfile|dirname).startswith("/run")
+  # when:
+    # - redis_as_service
+    # - ansible_service_mgr|default() == "systemd"
+    # - (redis_sentinel_pidfile|dirname).startswith("/var/run") or (redis_sentinel_pidfile|dirname).startswith("/run")
 
 - name: reload systemd daemon
   command: systemctl daemon-reload
   when:
     - redis_as_service
-    - ansible_service_mgr|default() == "systemd"
     - sentinel_unit_file|changed
+    - ansible_service_mgr|default() == "systemd"
 
 - name: set sentinel to start at boot
   service:
     name: sentinel_{{ redis_sentinel_port }}
     enabled: yes
-  when: redis_as_service
+  # when: redis_as_service
 
 # Check then create log dir to prevent aggressively overwriting permissions
 - name: check if sentinel log directory exists
@@ -82,7 +82,7 @@
     path: "{{ redis_sentinel_logfile }}"
     owner: "{{ redis_user }}"
     group: "{{ redis_group }}"
-  when: redis_sentinel_logfile != '""'
+  # when: redis_sentinel_logfile != '""'
 
 - name: check if sentinel pid directory exists
   stat:
@@ -109,12 +109,12 @@
     mode: 0640
   notify: "restart sentinel {{ redis_sentinel_port }}"
 
-- name: add sentinel init config file
-  template:
-    dest: /etc/sysconfig/sentinel_{{ redis_sentinel_port }}
-    src: redis.init.conf.j2
-  when: ansible_os_family == "RedHat"
-  notify: "restart sentinel {{ redis_sentinel_port }}"
+# - name: add sentinel init config file
+#   template:
+#     dest: /etc/sysconfig/sentinel_{{ redis_sentinel_port }}
+#     src: redis.init.conf.j2
+#   when: ansible_os_family == "RedHat"
+#   notify: "restart sentinel {{ redis_sentinel_port }}"
 
 - name: add sentinel init config file
   template:
