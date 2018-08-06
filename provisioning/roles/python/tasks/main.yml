@@ -67,11 +67,13 @@
     - simplejson
     - werkzeug
     - pandas
+    - libsass
     - PyJWT
     - pygeoip
     - markdown
     - rq-dashboard
     - rq
+    - jsmin
     - wtforms-components
     - otpauth
     - readability-lxml

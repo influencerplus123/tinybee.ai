@@ -32,9 +32,7 @@ log
 *.sql
 dat/GeoIP.dat
 *.ini
-pybossa/themes/pybossa-default-theme/
 dist/*
-pybossa/themes/crowdcrafting-theme/
 pybossa/translations
 pybossa/plugins/
 !pybossa/plugins/__init__.py
@@ -42,7 +40,6 @@ test/test_cache.py
 cover/*
 coverage.xml
 htmlcov/*
-pybossa/themes/*
 .vscode/
 env3/
 *.bak

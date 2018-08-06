@@ -811,7 +811,7 @@ def task_presenter(short_name, task_id):
     else:
         ensure_authorized_to('read', project)
 
-    if current_user.is_anonymous():
+    if current_user.is_anonymous:
         if not project.allow_anonymous_contributors:
             msg = ("Oops! You have to sign in to participate in "
                    "<strong>%s</strong>"
@@ -859,16 +859,16 @@ def task_presenter(short_name, task_id):
 def presenter(short_name):
 
     def invite_new_volunteers(project, ps):
-        user_id = None if current_user.is_anonymous() else current_user.id
+        user_id = None if current_user.is_anonymous else current_user.id
         user_ip = (anonymizer.ip(request.remote_addr or '127.0.0.1')
-                   if current_user.is_anonymous() else None)
+                   if current_user.is_anonymous else None)
         task = sched.new_task(project.id,
                               project.info.get('sched'),
                               user_id, user_ip, 0)
         return task == [] and ps.overall_progress < 100.0
 
     def respond(tmpl):
-        if (current_user.is_anonymous()):
+        if (current_user.is_anonymous):
             msg_1 = gettext(msg)
             flash(msg_1, "warning")
         resp = make_response(render_template(tmpl, **template_args))
@@ -887,7 +887,7 @@ def presenter(short_name):
     template_args = {"project": project, "title": title, "owner": owner,
                      "invite_new_volunteers": invite_new_volunteers(project, ps)}
 
-    if not project.allow_anonymous_contributors and current_user.is_anonymous():
+    if not project.allow_anonymous_contributors and current_user.is_anonymous:
         msg = "Oops! You have to sign in to participate in <strong>%s</strong> \
                project" % project.name
         flash(Markup(gettext(msg)), 'warning')
@@ -1564,7 +1564,7 @@ def show_blogpost(short_name, id):
     blogpost = blog_repo.get_by(id=id, project_id=project.id)
     if blogpost is None:
         raise abort(404)
-    if current_user.is_anonymous() and blogpost.published is False:
+    if current_user.is_anonymous and blogpost.published is False:
         raise abort(404)
     if (blogpost.published is False and
             current_user.is_authenticated() and

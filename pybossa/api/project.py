@@ -56,7 +56,7 @@ class ProjectAPI(APIBase):
         return inst
 
     def _update_object(self, obj):
-        if not current_user.is_anonymous():
+        if not current_user.is_anonymous:
             obj.owner_id = current_user.id
             owners = obj.owners_ids or []
             if current_user.id not in owners:
@@ -92,7 +92,7 @@ class ProjectAPI(APIBase):
         return tmp
 
     def _select_attributes(self, data):
-        if current_user.is_anonymous():
+        if current_user.is_anonymous:
             data = self._filter_private_data(data)
             return data
         if (current_user.is_authenticated and

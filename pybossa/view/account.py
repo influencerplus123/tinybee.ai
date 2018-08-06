@@ -160,7 +160,7 @@ def signin():
     if request.method == 'POST' and not form.validate():
         flash(gettext('Please correct the errors'), 'error')
     auth = {'twitter': False, 'facebook': False, 'google': False, 'wechat': False, 'weibo' : False}
-    if current_user.is_anonymous():
+    if current_user.is_anonymous:
         # If Twitter is enabled in config, show the Twitter Sign in button
         if (isLdap is False):
             for isp in OAuthProviders:
@@ -429,7 +429,7 @@ def _update_user_with_valid_email(user, email_addr):
 @blueprint.route('/profile', methods=['GET'])
 def redirect_profile():
     """Redirect method for profile."""
-    if current_user.is_anonymous():  # pragma: no cover
+    if current_user.is_anonymous:  # pragma: no cover
         return redirect_content_type(url_for('.signin'), status='not_signed_in')
     if (request.headers.get('Content-Type') == 'application/json') and current_user.is_authenticated():
         form = None
@@ -460,7 +460,7 @@ def profile(name):
         form = UserPrefMetadataForm(**form_data)
         form.set_upref_mdata_choices()
 
-    if current_user.is_anonymous() or (user.id != current_user.id):
+    if current_user.is_anonymous or (user.id != current_user.id):
         return _show_public_profile(user, form)
     if current_user.is_authenticated() and user.id == current_user.id:
         return _show_own_profile(user, form)
@@ -956,7 +956,7 @@ def get_user_pref_and_metadata(user_name, form):
         return user_pref, metadata
 
     if form.validate():
-        admin = user_name if current_user.is_anonymous() else current_user.name
+        admin = user_name if current_user.is_anonymous else current_user.name
         metadata = dict(admin=admin, time_stamp=time.ctime(),
                         user_type=form.user_type.data, work_hours_from=form.work_hours_from.data,
                         work_hours_to=form.work_hours_to.data, review=form.review.data,

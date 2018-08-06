@@ -151,7 +151,7 @@ def _retrieve_new_task(project_id):
     if project is None:
         raise NotFound
 
-    if not project.allow_anonymous_contributors and current_user.is_anonymous():
+    if not project.allow_anonymous_contributors and current_user.is_anonymous:
         info = dict(
             error="This project does not allow anonymous contributors")
         error = [model.task.Task(info=info)]
@@ -186,9 +186,9 @@ def _retrieve_new_task(project_id):
     else:
         desc = False
 
-    user_id = None if current_user.is_anonymous() else current_user.id
+    user_id = None if current_user.is_anonymous else current_user.id
     user_ip = (anonymizer.ip(request.remote_addr or '127.0.0.1')
-               if current_user.is_anonymous() else None)
+               if current_user.is_anonymous else None)
     external_uid = request.args.get('external_uid')
     task = sched.new_task(project_id, project.info.get('sched'),
                           user_id,
@@ -225,10 +225,10 @@ def user_progress(project_id=None, short_name=None):
             project = project_repo.get(project_id)
 
         if project:
-            # For now, keep this version, but wait until redis cache is 
+            # For now, keep this version, but wait until redis cache is
             # used here for task_runs too
             query_attrs = dict(project_id=project.id)
-            if current_user.is_anonymous():
+            if current_user.is_anonymous:
                 query_attrs['user_ip'] = anonymizer.ip(request.remote_addr or
                                                        '127.0.0.1')
             else:

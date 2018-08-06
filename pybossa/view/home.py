@@ -21,7 +21,6 @@ from flask_login import current_user
 from flask_login import current_user
 from pybossa.model.category import Category
 from flask import Blueprint
-from flask import render_template
 from pybossa.cache import projects as cached_projects
 from pybossa.cache import users as cached_users
 from pybossa.cache import categories as cached_cat

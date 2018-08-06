@@ -51,7 +51,7 @@ def login():
 def get_weibo_token(token=None):  # pragma: no cover
     """Get Weibo token from session."""
 
-    if current_user.is_anonymous():
+    if current_user.is_anonymous:
         return session.get('oauth_token')
 
     return (current_user.info['weibo_token']['oauth_token'], '')
@@ -81,14 +81,14 @@ def manage_user(access_token, user_data):
     # Weibo API does not provide a way
     # to get the e-mail so we will ask for it
     # only the first time
-    weibo_token=dict(oauth_token=access_token) 
-    info = dict(weibo_token=access_token, 
+    weibo_token=dict(oauth_token=access_token)
+    info = dict(weibo_token=access_token,
                 avatar_url=user_data['profile_image_url'])
 
     # alreay exist
     user = user_repo.get_by(weibo_user_id=user_data['id'])
     if user is not None:
-        user.info['weibo_token'] = info 
+        user.info['weibo_token'] = info
         user_repo.save(user)
         return user
 

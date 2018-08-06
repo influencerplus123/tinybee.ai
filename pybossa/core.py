@@ -270,7 +270,7 @@ def setup_babel(app):
     @babel.localeselector
     def _get_locale():
         locales = [l[0] for l in app.config.get('LOCALES')]
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             lang = current_user.locale
         else:
             lang = request.cookies.get('language')

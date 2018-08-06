@@ -49,7 +49,7 @@ def login():  # pragma: no cover
 @twitter.oauth.tokengetter
 def get_twitter_token():  # pragma: no cover
     """Get Twitter token from session."""
-    if current_user.is_anonymous():
+    if current_user.is_anonymous:
         return None
 
     return((current_user.info['twitter_token']['oauth_token'],
