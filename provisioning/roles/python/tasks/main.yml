@@ -71,7 +71,6 @@
     - PyJWT
     - pygeoip
     - markdown
-    - rq-dashboard
     - rq
     - jsmin
     - wtforms-components
@@ -81,5 +80,13 @@
     - pycountry
     - faker
     - rq_scheduler
+  become: true
+
+- name: Install pip dependencies for SNI support
+  pip:
+    name: "{{ item }}"
+    version: 0.3.1
+  with_items:
+    - rq-dashboard
   become: true
 
