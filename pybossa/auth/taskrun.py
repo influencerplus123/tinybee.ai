@@ -37,7 +37,7 @@ class TaskRunAuth(object):
 
     def _create(self, user, taskrun):
         project = self.project_repo.get(taskrun.project_id)
-        if (user.is_anonymous() and
+        if (user.is_anonymous and
                 project.allow_anonymous_contributors is False):
             return False
         authorized = self.task_repo.count_task_runs_with(
@@ -57,7 +57,7 @@ class TaskRunAuth(object):
         return False
 
     def _delete(self, user, taskrun):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return False
         result = self.result_repo.get_by(project_id=taskrun.project_id,
                                          task_id=taskrun.task_id)

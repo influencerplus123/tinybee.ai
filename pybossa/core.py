@@ -62,7 +62,7 @@ def create_app(run_as_server=True):
         setup_scheduled_jobs(app)
     setup_blueprints(app)
     setup_hooks(app)
-    # setup_error_handlers(app)
+    setup_error_handlers(app)
     setup_ldap(app)
     setup_external_services(app)
     setup_jinja(app)
@@ -301,7 +301,7 @@ def setup_blueprints(app):
     from pybossa.view.amazon import blueprint as amazon
 
     blueprints = [{'handler': home, 'url_prefix': '/'},
-                  {'handler': api,  'url_prefix': '/api'},
+                  {'handler': api, 'url_prefix': '/api'},
                   {'handler': account, 'url_prefix': '/account'},
                   {'handler': projects, 'url_prefix': '/project'},
                   {'handler': admin, 'url_prefix': '/admin'},
@@ -591,7 +591,7 @@ def setup_hooks(app):
         # Announcement sections
         if app.config.get('ANNOUNCEMENT'):
             announcement = app.config['ANNOUNCEMENT']
-            if current_user and current_user.is_authenticated():
+            if current_user and current_user.is_authenticated:
                 for key in announcement.keys():
                     if key == 'admin' and current_user.admin:
                         flash(announcement[key], 'info')

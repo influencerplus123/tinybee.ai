@@ -269,7 +269,7 @@ def auth_jwt_project(short_name):
 def get_disqus_sso_api():
     """Return remote_auth_s3 and api_key for disqus SSO."""
     try:
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             message, timestamp, sig, pub_key = get_disqus_sso_payload(current_user)
         else:
             message, timestamp, sig, pub_key = get_disqus_sso_payload(None)

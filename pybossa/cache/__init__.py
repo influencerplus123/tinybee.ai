@@ -30,6 +30,7 @@ import os
 import hashlib
 from functools import wraps
 from pybossa.core import sentinel
+from flask import current_app
 
 try:
     import cPickle as pickle
@@ -70,9 +71,7 @@ def get_hash_key(prefix, key_to_hash):
 def cache(key_prefix, timeout=300):
     """
     Decorator for caching functions.
-
     Returns the function value from cache, or the function if cache disabled
-
     """
     if timeout is None:
         timeout = 300
@@ -92,6 +91,7 @@ def cache(key_prefix, timeout=300):
             return output
         return wrapper
     return decorator
+
 
 
 def memoize(timeout=300):

@@ -15,7 +15,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with PYBOSSA.  If not, see <http://www.gnu.org/licenses/>.
-
 from sqlalchemy.sql import text
 from pybossa.cache import cache, delete_cached
 from pybossa.core import db, timeouts
@@ -24,8 +23,7 @@ import pybossa.model as model
 
 session = db.slave_session
 
-@cache(key_prefix="categories_all",
-       timeout=timeouts.get('CATEGORY_TIMEOUT'))
+@cache(key_prefix="categories_all", timeout=timeouts.get('CATEGORY_TIMEOUT'))
 def get_all():
     """Return all categories"""
     data = session.query(model.category.Category).all()

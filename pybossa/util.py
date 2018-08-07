@@ -365,7 +365,7 @@ def get_user_id_or_ip():
     Otherwise returns its IP address (defaults to 127.0.0.1).
     """
     cp = CryptoPAn(current_app.config.get('CRYPTOPAN_KEY'))
-    user_id = current_user.id if current_user.is_authenticated() else None
+    user_id = current_user.id if current_user.is_authenticated else None
     user_ip = cp.anonymize(request.remote_addr or "127.0.0.1") \
         if current_user.is_anonymous else None
     external_uid = request.args.get('external_uid')

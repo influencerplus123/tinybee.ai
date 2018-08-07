@@ -130,7 +130,7 @@ def manage_user_login(user, user_data, next_url):
 
 
 def manage_user_no_login(access_token, next_url):
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         user = user_repo.get(current_user.id)
         user.info['wechat_token'] = access_token
         user_repo.save(user)

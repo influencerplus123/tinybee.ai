@@ -19,13 +19,9 @@
 import time
 import re
 import simplejson as json
-import os
-import math
 import requests
-from StringIO import StringIO
-
 from flask import Blueprint, request, url_for, flash, redirect, abort, Response, current_app
-from flask import render_template, make_response, session
+from flask import render_template, make_response
 from flask import Markup
 from flask_login import login_required, current_user
 from flask_babel import gettext
@@ -39,10 +35,7 @@ from pybossa.core import (uploader, signer, sentinel, json_exporter,
 from pybossa.model import make_uuid
 from pybossa.model.project import Project
 from pybossa.model.category import Category
-from pybossa.model.task import Task
-from pybossa.model.task_run import TaskRun
 from pybossa.model.auditlog import Auditlog
-from pybossa.model.project_stats import ProjectStats
 from pybossa.model.webhook import Webhook
 from pybossa.model.blogpost import Blogpost
 from pybossa.util import (Pagination, admin_required, get_user_id_or_ip, rank,
@@ -83,7 +76,7 @@ webhook_queue = Queue('high', connection=sentinel.master)
 
 def sanitize_project_owner(project, owner, current_user, ps=None):
     """Sanitize project and owner data."""
-    if current_user.is_authenticated() and owner.id == current_user.id:
+    if current_user.is_authenticated and owner.id == current_user.id:
         if isinstance(project, Project):
             project_sanitized = project.dictize()   # Project object
         else:
@@ -117,9 +110,9 @@ def sanitize_project_owner(project, owner, current_user, ps=None):
 def zip_enabled(project, user):
     """Return if the user can download a ZIP file."""
     if project.zip_download is False:
-        if user.is_anonymous():
+        if user.is_anonymous:
             return abort(401)
-        if (user.is_authenticated() and
+        if (user.is_authenticated and
             (user.id not in project.owners_ids and
                 user.admin is False)):
             return abort(403)
@@ -169,6 +162,7 @@ def index(page):
                              'featured', True, False, order_by, desc)
     else:
         categories = cached_cat.get_all()
+        print (categories)
         cat_short_name = categories[0].short_name
         return redirect_content_type(url_for('.project_cat_index', category=cat_short_name))
 
@@ -1190,7 +1184,7 @@ def export_to(short_name):
             return respond()
 
     export_formats = ["json", "csv"]
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         if current_user.ckan_api:
             export_formats.append('ckan')
 
@@ -1525,7 +1519,7 @@ def task_priority(short_name):
 def show_blogposts(short_name):
     project, owner, ps = project_by_shortname(short_name)
 
-    if current_user.is_authenticated() and current_user.id == owner.id:
+    if current_user.is_authenticated and current_user.id == owner.id:
         blogposts = blog_repo.filter_by(project_id=project.id)
     else:
         blogposts = blog_repo.filter_by(project_id=project.id,
@@ -1567,7 +1561,7 @@ def show_blogpost(short_name, id):
     if current_user.is_anonymous and blogpost.published is False:
         raise abort(404)
     if (blogpost.published is False and
-            current_user.is_authenticated() and
+            current_user.is_authenticated and
             current_user.id != blogpost.user_id):
         raise abort(404)
     if project.needs_password():

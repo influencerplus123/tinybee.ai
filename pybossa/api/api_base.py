@@ -218,7 +218,7 @@ class APIBase(MethodView):
         return results
 
     def api_context(self, all_arg, **filters):
-        if current_user.is_authenticated():
+        if current_user.is_authenticated:
             filters['owner_id'] = current_user.id
         if filters.get('owner_id') and all_arg == '1':
             del filters['owner_id']

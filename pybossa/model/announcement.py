@@ -24,6 +24,7 @@ from pybossa.model import DomainObject, make_timestamp
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.ext.mutable import MutableDict
 
+
 class Announcement(db.Model, DomainObject):
     """An Announcement"""
 

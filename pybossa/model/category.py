@@ -19,6 +19,7 @@
 from sqlalchemy import Integer, Text
 from sqlalchemy.schema import Column, ForeignKey
 from sqlalchemy.dialects.postgresql import JSONB
+
 from sqlalchemy.ext.mutable import MutableDict
 from flask import current_app
 
