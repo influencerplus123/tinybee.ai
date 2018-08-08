@@ -21,6 +21,8 @@ from pybossa.core import db, timeouts
 from pybossa.model.project import Project
 from pybossa.util import pretty_date
 from pybossa.cache import memoize, cache, delete_memoized, delete_cached
+from pybossa.model.user import User
+from pybossa.model.project import Project
 
 
 session = db.slave_session
@@ -247,17 +249,27 @@ def _n_featured():
 @memoize(timeout=timeouts.get('STATS_FRONTPAGE_TIMEOUT'))
 def get_all_featured(category=None):
     """Return a list of featured projects with a pagination."""
-    sql = text(
-        '''SELECT project.id, project.name, project.short_name, project.info,
-               project.created, project.updated, project.description,
-               "user".fullname AS owner
-           FROM project, "user"
-           WHERE project.featured=true
-           AND "user".id=project.owner_id
-           GROUP BY project.id, "user".id;''')
+    # sql = text(
+    #     '''SELECT project.id, project.name, project.short_name, project.info,
+    #            project.created, project.updated, project.description,
+    #            "user".fullname AS owner
+    #        FROM project, "user"
+    #        WHERE project.featured=true
+    #        AND "user".id=project.owner_id
+    #        GROUP BY project.id, "user".id;''')
 
-    results = session.execute(sql)
+    # results = session.execute(sql)
+    results = session.query(
+        Project, User
+    ).filter(
+        User.id == Project.owner_id
+    ).filter(
+        Project.featured
+    ).group_by(
+        Project.id, User.id
+    )
     projects = []
+
     for row in results:
         project = dict(id=row.id, name=row.name, short_name=row.short_name,
                        created=row.created, description=row.description,

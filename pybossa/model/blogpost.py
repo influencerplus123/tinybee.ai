@@ -34,7 +34,7 @@ class Blogpost(db.Model, DomainObject):
     id = Column(Integer, primary_key=True)
     #: UTC timestamp when the blogpost is created
     created = Column(Text, default=make_timestamp)
-    #: UTC timestamp when the blogpost is updated 
+    #: UTC timestamp when the blogpost is updated
     updated = Column(Text, default=make_timestamp)
     #: Project.ID for the Blogpost
     project_id = Column(Integer, ForeignKey('project.id',

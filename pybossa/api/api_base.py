@@ -47,11 +47,12 @@ from pybossa.model.task import Task
 from pybossa.cache.projects import clean_project
 from pybossa.cache.users import delete_user_summary_id
 
+
 repos = {'Task': {'repo': task_repo, 'filter': 'filter_tasks_by',
                   'get': 'get_task', 'save': 'save', 'update': 'update',
                   'delete': 'delete'},
          'TaskRun': {'repo': task_repo, 'filter': 'filter_task_runs_by',
-                     'get': 'get_task_run',  'save': 'save',
+                     'get': 'get_task_run', 'save': 'save',
                      'update': 'update', 'delete': 'delete'},
          'User': {'repo': user_repo, 'filter': 'filter_by', 'get': 'get',
                   'save': 'save', 'update': 'update'},

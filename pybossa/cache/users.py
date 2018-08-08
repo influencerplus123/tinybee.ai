@@ -67,7 +67,7 @@ def get_user_summary(name):
                     google_user_id=row.google_user_id,
                     facebook_user_id=row.facebook_user_id,
                     info=row.info, admin=row.admin,
-                    locale=row.locale, 
+                    locale=row.locale,
                     balance=row.balance, withdrawn=row.withdrawn,
                     email_addr=row.email_addr, n_answers=row.n_answers,
                     valid_email=row.valid_email,

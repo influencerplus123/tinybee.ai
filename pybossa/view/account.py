@@ -76,7 +76,9 @@ def index(page=1):
     update_feed = get_update_feed()
     per_page = 24
     count = cached_users.get_total_users()
+    print (count)
     accounts = cached_users.get_users_page(page, per_page)
+    print (accounts)
     if not accounts and page != 1:
         abort(404)
     pagination = Pagination(page, per_page, count)

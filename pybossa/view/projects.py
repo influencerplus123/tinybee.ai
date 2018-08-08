@@ -162,7 +162,6 @@ def index(page):
                              'featured', True, False, order_by, desc)
     else:
         categories = cached_cat.get_all()
-        print (categories)
         cat_short_name = categories[0].short_name
         return redirect_content_type(url_for('.project_cat_index', category=cat_short_name))
 
@@ -584,7 +583,7 @@ def details(short_name):
                                                                 ps)
     template_args = {"project": project_sanitized,
                      "title": title,
-                     "owner":  owner_sanitized,
+                     "owner": owner_sanitized,
                      "n_tasks": ps.n_tasks,
                      "n_task_runs": ps.n_task_runs,
                      "overall_progress": ps.overall_progress,
@@ -1415,8 +1414,6 @@ def task_scheduler(short_name):
     title = project_title(project, gettext('Task Scheduler'))
     form = TaskSchedulerForm(request.body)
     pro = pro_features()
-
-
     def respond():
         project_sanitized, owner_sanitized = sanitize_project_owner(project,
                                                                     owner,
@@ -1743,7 +1740,7 @@ def publish(short_name):
         template_args = {"project": project_sanitized,
                          "pro_features": pro,
                          "csrf": generate_csrf()}
-        response = dict(template = '/projects/publish.html', **template_args)
+        response = dict(template='/projects/publish.html', **template_args)
         return handle_content_type(response)
 
     project.published = True
@@ -1875,7 +1872,7 @@ def results(short_name):
                      "pro_features": pro,
                      "n_results": ps.n_results}
 
-    response = dict(template = '/projects/results.html', **template_args)
+    response = dict(template='/projects/results.html', **template_args)
 
     return handle_content_type(response)
 
